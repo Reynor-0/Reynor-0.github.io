@@ -1,86 +1,325 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Heading = {
+	depth: number;
+	slug: string;
+	text: string;
+};
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & {
+	currentId?: string;
+	headings?: Heading[];
+};
+
+const { title, description, pubDate, updatedDate, heroImage, currentId, headings = [] } = Astro.props;
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 ---
 
-<html lang="en">
+<html lang="zh-CN">
 	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
+		<BaseHead title={title} description={description} image={heroImage} />
 	</head>
-
 	<body>
 		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+		<main class="docs-shell">
+			<aside class="sidebar" aria-label="文章导航">
+				<a class="sidebar-title" href="/blog">导览</a>
+				{
+					posts.map((post) => (
+						<a class:list={{ active: post.id === currentId }} href={`/blog/${post.id}/`}>
+							<strong>{post.data.title}</strong>
+						</a>
+					))
+				}
+			</aside>
+
+			<article class="content">
+				<nav class="crumb" aria-label="面包屑导航">
+					<a href="/">主页</a>
+					<span>〉</span>
+					<a href="/blog">技术</a>
+					<span>〉</span>
+					<strong>{title}</strong>
+				</nav>
+				<header class="post-head">
+					<h1>{title}</h1>
+					<p>{description}</p>
+					<div class="meta">
+						<FormattedDate date={pubDate} />
+						{
+							updatedDate && (
+								<span>
+									更新于 <FormattedDate date={updatedDate} />
+								</span>
+							)
+						}
 					</div>
+				</header>
+				<div class="prose">
 					<slot />
 				</div>
 			</article>
+
+			<aside class="toc" aria-label="文章目录">
+				<h2>目录</h2>
+				{
+					visibleHeadings.length > 0 ? (
+						visibleHeadings.map((heading) => (
+							<a class={`depth-${heading.depth}`} data-toc-link={heading.slug} href={`#${heading.slug}`}>
+								{heading.text}
+							</a>
+						))
+					) : (
+						<p>暂无目录</p>
+					)
+				}
+			</aside>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<script>
+	const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
+	const headingPairs = tocLinks
+		.map((link) => {
+			const slug = link.getAttribute('data-toc-link');
+			const heading = slug ? document.getElementById(slug) : null;
+			return heading ? { heading, link } : null;
+		})
+		.filter(Boolean);
+
+	function setActiveToc(activeLink) {
+		tocLinks.forEach((link) => link.classList.remove('active'));
+		activeLink?.classList.add('active');
+	}
+
+	function updateActiveToc() {
+		const offset = 112;
+		let current = headingPairs[0];
+
+		for (const pair of headingPairs) {
+			const top = pair.heading.getBoundingClientRect().top;
+			if (top <= offset) {
+				current = pair;
+			} else {
+				break;
+			}
+		}
+
+		if (current) setActiveToc(current.link);
+	}
+
+	if (headingPairs.length > 0) {
+		tocLinks.forEach((link) => {
+			link.addEventListener('click', () => setActiveToc(link));
+		});
+
+		window.addEventListener('scroll', updateActiveToc, { passive: true });
+		window.addEventListener('resize', updateActiveToc);
+		updateActiveToc();
+	}
+</script>
+
+<style>
+	.docs-shell {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 760px) 220px;
+		gap: 36px;
+		align-items: start;
+		width: min(100% - 32px, 1280px);
+	}
+
+	.sidebar {
+		position: sticky;
+		top: 92px;
+		max-height: calc(100vh - 130px);
+		overflow: auto;
+		padding-right: 8px;
+	}
+
+	.sidebar-title {
+		display: block;
+		margin-bottom: 10px;
+		padding: 0.72rem 0.75rem;
+		border-radius: 8px;
+		color: rgb(var(--muted));
+		font-weight: 800;
+		font-size: 0.94rem;
+		line-height: 1.35;
+	}
+
+	.sidebar-title:hover {
+		background: rgba(255, 255, 255, 0.74);
+		color: rgb(var(--ink));
+	}
+
+	.sidebar a {
+		display: block;
+		padding: 0.72rem 0.75rem;
+		border-radius: 8px;
+		color: rgb(var(--muted));
+	}
+
+	.sidebar a:hover {
+		background: rgba(255, 255, 255, 0.74);
+		color: rgb(var(--ink));
+	}
+
+	.sidebar a.active {
+		background: #eaf3ff;
+		color: var(--accent-strong);
+	}
+
+	.sidebar strong {
+		display: block;
+		font-size: 0.94rem;
+		font-weight: 700;
+		line-height: 1.35;
+	}
+
+	.crumb {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-bottom: 20px;
+		color: rgb(var(--muted));
+		font-size: 0.92rem;
+	}
+
+	.crumb a {
+		color: rgb(var(--muted));
+	}
+
+	.crumb a:hover {
+		color: var(--accent-strong);
+	}
+
+	.crumb strong {
+		color: rgb(var(--ink));
+		font-weight: 700;
+	}
+
+	.post-head {
+		margin-bottom: 28px;
+	}
+
+	h1 {
+		font-size: clamp(2rem, 5vw, 2.65rem);
+	}
+
+	.post-head p {
+		max-width: 720px;
+		color: rgb(var(--muted));
+		font-size: 1.04rem;
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px 18px;
+		color: rgb(var(--muted));
+		font-size: 0.92rem;
+	}
+
+	.prose {
+		padding-bottom: 24px;
+	}
+
+	.prose :global(h2) {
+		margin-top: 2.4rem;
+		padding-top: 0.2rem;
+		font-size: 1.52rem;
+	}
+
+	.prose :global(h3) {
+		margin-top: 1.7rem;
+		font-size: 1.18rem;
+	}
+
+	.prose :global(p),
+	.prose :global(li) {
+		color: rgb(var(--ink));
+	}
+
+	.prose :global(ul),
+	.prose :global(ol) {
+		padding-left: 1.35rem;
+	}
+
+	.toc {
+		position: sticky;
+		top: 92px;
+		max-height: calc(100vh - 130px);
+		overflow: auto;
+		padding-left: 18px;
+		border-left: 1px solid rgba(var(--line), 0.95);
+	}
+
+	.toc h2 {
+		margin-bottom: 0.65rem;
+		font-size: 0.98rem;
+	}
+
+	.toc a,
+	.toc p {
+		display: block;
+		margin: 0;
+		padding: 0.34rem 0;
+		color: rgb(var(--muted));
+		font-size: 0.9rem;
+		line-height: 1.35;
+	}
+
+	.toc a:hover {
+		color: rgb(var(--ink));
+	}
+
+	.toc a:focus,
+	.toc a:visited {
+		color: rgb(var(--muted));
+	}
+
+	.toc a.active {
+		color: rgb(var(--ink));
+		font-weight: 800;
+	}
+
+	.toc .depth-3 {
+		padding-left: 0.9rem;
+		font-size: 0.86rem;
+	}
+
+	@media (max-width: 1080px) {
+		.docs-shell {
+			grid-template-columns: 230px minmax(0, 1fr);
+		}
+
+		.toc {
+			display: none;
+		}
+	}
+
+	@media (max-width: 780px) {
+		.docs-shell {
+			grid-template-columns: 1fr;
+			width: min(100% - 24px, 1280px);
+		}
+
+		.sidebar {
+			position: static;
+			max-height: none;
+			display: grid;
+			gap: 6px;
+		}
+	}
+</style>

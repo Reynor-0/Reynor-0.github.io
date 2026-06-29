@@ -1,84 +1,302 @@
 ---
+import { getCollection } from 'astro:content';
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const searchEntries = posts.map((post) => ({
+	title: post.data.title,
+	description: post.data.description,
+	url: `/blog/${post.id}/`,
+}));
 ---
 
-<header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">Home</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">About</HeaderLink>
+<header class="site-header">
+	<nav class="nav-shell" aria-label="Primary navigation">
+		<a class="brand" href="/">
+			<span class="brand-mark">R</span>
+			<span>{SITE_TITLE}</span>
+		</a>
+		<div class="nav-links">
+			<HeaderLink href="/">主页</HeaderLink>
+			<HeaderLink href="/blog">技术</HeaderLink>
+			<HeaderLink href="/projects">项目</HeaderLink>
+			<HeaderLink href="/reading">阅读</HeaderLink>
+			<HeaderLink href="/notes">随笔</HeaderLink>
+			<HeaderLink href="/resources">资源</HeaderLink>
+			<HeaderLink href="/about">关于</HeaderLink>
 		</div>
-		<div class="social-links">
-			<a href="https://m.webtoo.ls/@astro" target="_blank">
-				<span class="sr-only">Follow Astro on Mastodon</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M11.19 12.195c2.016-.24 3.77-1.475 3.99-2.603.348-1.778.32-4.339.32-4.339 0-3.47-2.286-4.488-2.286-4.488C12.062.238 10.083.017 8.027 0h-.05C5.92.017 3.942.238 2.79.765c0 0-2.285 1.017-2.285 4.488l-.002.662c-.004.64-.007 1.35.011 2.091.083 3.394.626 6.74 3.78 7.57 1.454.383 2.703.463 3.709.408 1.823-.1 2.847-.647 2.847-.647l-.06-1.317s-1.303.41-2.767.36c-1.45-.05-2.98-.156-3.215-1.928a3.614 3.614 0 0 1-.033-.496s1.424.346 3.228.428c1.103.05 2.137-.064 3.188-.189zm1.613-2.47H11.13v-4.08c0-.859-.364-1.295-1.091-1.295-.804 0-1.207.517-1.207 1.541v2.233H7.168V5.89c0-1.024-.403-1.541-1.207-1.541-.727 0-1.091.436-1.091 1.296v4.079H3.197V5.522c0-.859.22-1.541.66-2.046.456-.505 1.052-.764 1.793-.764.856 0 1.504.328 1.933.983L8 4.39l.417-.695c.429-.655 1.077-.983 1.934-.983.74 0 1.336.259 1.791.764.442.505.661 1.187.661 2.046v4.203z"
-					></path></svg
-				>
-			</a>
-			<a href="https://twitter.com/astrodotbuild" target="_blank">
-				<span class="sr-only">Follow Astro on Twitter</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"
-					></path></svg
-				>
-			</a>
-			<a href="https://github.com/withastro/astro" target="_blank">
-				<span class="sr-only">Go to Astro's GitHub repo</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-					></path></svg
-				>
-			</a>
+		<div class="search" data-search-root>
+			<label class="sr-only" for="site-search">搜索文章</label>
+			<svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+				<path
+					fill="none"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="m21 21-4.34-4.34m1.34-5.66a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+				/>
+			</svg>
+			<input id="site-search" data-search-input type="search" placeholder="查找" autocomplete="off" />
+			<kbd>Ctrl K</kbd>
+			<div class="search-results" data-search-results hidden></div>
 		</div>
+		<a class="github-link" href="https://github.com/Reynor-0/Reynor-0.github.io" target="_blank" rel="noreferrer">
+			<svg viewBox="0 0 16 16" aria-hidden="true" width="18" height="18">
+				<path
+					fill="currentColor"
+					d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.5 7.5 0 0 1 8 3.36c.68 0 1.36.09 2 .27 1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+				/>
+			</svg>
+			<span>GitHub</span>
+		</a>
 	</nav>
 </header>
-<style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		background: white;
-		box-shadow: 0 2px 8px rgba(var(--black), 5%);
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
+
+<script define:vars={{ searchEntries }}>
+	const root = document.querySelector('[data-search-root]');
+	const input = document.querySelector('[data-search-input]');
+	const results = document.querySelector('[data-search-results]');
+
+	function closeResults() {
+		if (results) {
+			results.hidden = true;
+			results.innerHTML = '';
+		}
 	}
 
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
+	function renderResults(query) {
+		if (!results) return;
+		const normalized = query.trim().toLowerCase();
+		if (!normalized) {
+			closeResults();
+			return;
+		}
+
+		const matches = searchEntries
+			.filter((entry) => `${entry.title} ${entry.description}`.toLowerCase().includes(normalized))
+			.slice(0, 6);
+
+		if (matches.length === 0) {
+			const empty = document.createElement('p');
+			empty.textContent = '没有找到相关文章';
+			results.replaceChildren(empty);
+			results.hidden = false;
+			return;
+		}
+
+		const nodes = matches.map((entry) => {
+			const link = document.createElement('a');
+			const title = document.createElement('strong');
+			const description = document.createElement('span');
+			link.href = entry.url;
+			title.textContent = entry.title;
+			description.textContent = entry.description;
+			link.append(title, description);
+			return link;
+		});
+		results.replaceChildren(...nodes);
+		results.hidden = false;
 	}
-	nav {
+
+	input?.addEventListener('input', (event) => {
+		renderResults(event.currentTarget.value);
+	});
+
+	input?.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			const first = results?.querySelector('a');
+			if (first) window.location.href = first.href;
+		}
+		if (event.key === 'Escape') {
+			closeResults();
+			input.blur();
+		}
+	});
+
+	document.addEventListener('keydown', (event) => {
+		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+			event.preventDefault();
+			input?.focus();
+		}
+	});
+
+	document.addEventListener('click', (event) => {
+		if (root && !root.contains(event.target)) closeResults();
+	});
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		border-bottom: 1px solid rgba(var(--line), 0.78);
+		background: rgba(255, 255, 255, 0.86);
+		backdrop-filter: blur(14px);
+	}
+
+	.nav-shell {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		width: min(100% - 32px, 1320px);
+		height: 66px;
+		margin: 0 auto;
+		gap: 20px;
 	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 11px;
+		color: rgb(var(--ink));
+		font-size: 1.05rem;
+		font-weight: 800;
+		white-space: nowrap;
 	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
+
+	.brand-mark {
+		display: inline-grid;
+		width: 30px;
+		height: 30px;
+		place-items: center;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #4389bd, #9cc7da);
+		color: #fff;
+		font-size: 0.9rem;
+		box-shadow: 0 8px 20px rgba(67, 137, 189, 0.24);
 	}
-	.social-links,
-	.social-links a {
+
+	.nav-links {
 		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		flex: 1;
 	}
+
+	.search {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: min(260px, 24vw);
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid rgba(var(--line), 0.88);
+		border-radius: 8px;
+		background: rgba(244, 246, 248, 0.92);
+		color: rgb(var(--muted));
+	}
+
+	.search input {
+		min-width: 0;
+		flex: 1;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: rgb(var(--ink));
+		font: inherit;
+		font-size: 0.92rem;
+	}
+
+	.search kbd {
+		padding: 0.08rem 0.35rem;
+		border: 1px solid rgba(var(--line), 1);
+		border-radius: 5px;
+		background: #fff;
+		color: rgb(var(--muted));
+		font-size: 0.75rem;
+		font-family: inherit;
+		white-space: nowrap;
+	}
+
+	.search-results {
+		position: absolute;
+		top: calc(100% + 8px);
+		right: 0;
+		z-index: 20;
+		width: min(420px, calc(100vw - 32px));
+		padding: 8px;
+		border: 1px solid rgba(var(--line), 0.95);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.98);
+		box-shadow: var(--shadow);
+	}
+
+	.search-results a,
+	.search-results p {
+		display: block;
+		margin: 0;
+		padding: 0.65rem 0.7rem;
+		border-radius: 8px;
+		color: rgb(var(--ink));
+	}
+
+	.search-results a:hover {
+		background: #eef6ff;
+	}
+
+	.search-results strong,
+	.search-results span {
+		display: block;
+	}
+
+	.search-results strong {
+		font-size: 0.92rem;
+		line-height: 1.35;
+	}
+
+	.search-results span,
+	.search-results p {
+		color: rgb(var(--muted));
+		font-size: 0.82rem;
+		line-height: 1.45;
+	}
+
+	.github-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+		color: rgb(var(--ink));
+		font-size: 0.9rem;
+	}
+
+	.github-link:hover {
+		color: var(--accent-strong);
+	}
+
 	@media (max-width: 720px) {
-		.social-links {
+		.nav-shell {
+			width: min(100% - 20px, 1320px);
+			height: auto;
+			padding: 12px 0;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.nav-links {
+			order: 3;
+			width: 100%;
+			justify-content: flex-start;
+			overflow-x: auto;
+		}
+
+		.github-link span {
+			display: none;
+		}
+
+		.search {
+			order: 2;
+			width: calc(100% - 42px);
+			flex: 1;
+		}
+
+		.search kbd {
 			display: none;
 		}
 	}

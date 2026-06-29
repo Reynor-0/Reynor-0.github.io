@@ -1,0 +1,60 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const notes = [
+	{ date: '2026/06', title: '把模板博客改成个人知识库', text: '先清理模板内容，再逐步建立栏目、资源和发布规范。', href: '/notes/blog-as-knowledge-base/' },
+	{ date: '2026/06', title: '为什么要区分完整性和实时性', text: '很多工程问题不是缺少 buffer，而是目标本身互相冲突。', href: '/notes/realtime-vs-integrity/' },
+	{ date: '2026/05', title: '学习记录应该保留问题现场', text: '比结论更有价值的是当时的约束、误判和取舍过程。', href: '/notes/keep-the-problem-context/' },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`随笔 - ${SITE_TITLE}`} description="阶段总结、想法和非严格技术记录。" />
+	</head>
+	<body>
+		<Header />
+		<main class="notes-page">
+			<nav class="crumb"><a href="/">主页</a><span>〉</span><strong>随笔</strong></nav>
+			<section class="hero">
+				<p class="eyebrow">Notes</p>
+				<h1>随笔</h1>
+				<p>随笔栏目更适合轻量、按时间排列的记录，不强求每篇都有完整结构。</p>
+			</section>
+			<section class="timeline">
+				{
+					notes.map((note) => (
+						<a href={note.href}>
+							<time>{note.date}</time>
+							<div>
+								<h2>{note.title}</h2>
+								<p>{note.text}</p>
+							</div>
+						</a>
+					))
+				}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.notes-page { width: min(100% - 32px, 860px); }
+	.crumb { display: flex; gap: 0.35rem; margin-bottom: 20px; color: rgb(var(--muted)); font-size: 0.92rem; }
+	.hero { margin-bottom: 30px; }
+	.eyebrow { margin-bottom: 0.25rem; color: var(--accent-strong); font-weight: 800; text-transform: uppercase; }
+	.hero p { color: rgb(var(--muted)); }
+	.timeline { display: grid; gap: 0; border-left: 1px solid rgba(var(--line), 0.95); }
+	.timeline a { position: relative; display: grid; grid-template-columns: 90px 1fr; gap: 24px; padding: 0 0 28px 24px; color: rgb(var(--ink)); }
+	.timeline a::before { position: absolute; left: -5px; top: 0.45rem; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); content: ""; }
+	.timeline a:hover h2 { color: var(--accent-strong); }
+	time { color: rgb(var(--muted)); font-size: 0.9rem; }
+	.timeline h2 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+	.timeline p { margin: 0; color: rgb(var(--muted)); }
+	@media (max-width: 640px) { .timeline a { grid-template-columns: 1fr; gap: 6px; } }
+</style>

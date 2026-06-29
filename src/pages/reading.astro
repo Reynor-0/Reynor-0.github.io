@@ -1,0 +1,62 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const items = [
+	{ type: '论文', title: 'AHD Demosaicing', source: 'Image Processing', status: '待读', href: '/reading/ahd-demosaicing/' },
+	{ type: '文档', title: 'V4L2 Buffer Management', source: 'Linux Media API', status: '摘记中', href: '/reading/v4l2-buffer-management/' },
+	{ type: '书籍', title: 'Computer Systems: A Programmer’s Perspective', source: 'Systems', status: '长期阅读', href: '/reading/csapp/' },
+	{ type: '博客', title: 'Backpressure in Streaming Systems', source: 'Distributed Systems', status: '已读', href: '/reading/backpressure-streaming/' },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`阅读 - ${SITE_TITLE}`} description="论文、书籍和技术文章的阅读摘记。" />
+	</head>
+	<body>
+		<Header />
+		<main class="reading-page">
+			<nav class="crumb"><a href="/">主页</a><span>〉</span><strong>阅读</strong></nav>
+			<section class="hero">
+				<p class="eyebrow">Reading</p>
+				<h1>阅读</h1>
+				<p>阅读栏目适合按来源、主题和状态管理论文、书籍、技术文档与文章摘记。</p>
+			</section>
+			<section class="reading-list">
+				{
+					items.map((item) => (
+						<a href={item.href}>
+							<span>{item.type}</span>
+							<div>
+								<h2>{item.title}</h2>
+								<p>{item.source}</p>
+							</div>
+							<strong>{item.status}</strong>
+						</a>
+					))
+				}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.reading-page { width: min(100% - 32px, 920px); }
+	.crumb { display: flex; gap: 0.35rem; margin-bottom: 20px; color: rgb(var(--muted)); font-size: 0.92rem; }
+	.hero { margin-bottom: 28px; }
+	.eyebrow { margin-bottom: 0.25rem; color: var(--accent-strong); font-weight: 800; text-transform: uppercase; }
+	.hero p { color: rgb(var(--muted)); }
+	.reading-list { display: grid; gap: 12px; }
+	.reading-list a { display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 18px; padding: 1rem 1.1rem; border: 1px solid rgba(var(--line), 0.9); border-radius: 8px; background: rgba(255, 255, 255, 0.84); color: rgb(var(--ink)); }
+	.reading-list a:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+	.reading-list span { color: var(--accent-strong); font-size: 0.86rem; font-weight: 800; }
+	.reading-list h2 { margin: 0 0 0.2rem; font-size: 1.08rem; }
+	.reading-list p { margin: 0; color: rgb(var(--muted)); font-size: 0.9rem; }
+	.reading-list strong { color: rgb(var(--muted)); font-size: 0.88rem; }
+	@media (max-width: 640px) { .reading-list a { grid-template-columns: 1fr; gap: 6px; } }
+</style>

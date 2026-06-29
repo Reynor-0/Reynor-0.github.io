@@ -1,49 +1,257 @@
 ---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import AboutImage from '../assets/blog-placeholder-about.jpg';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+		<main class="home">
+			<section class="hero">
+				<div class="notice">
+					<span>🧭</span>
+					<p>记录图像处理、系统设计和工程实践中的长期问题。</p>
+				</div>
+				<h1>Hi, I'm <span>Reynor</span></h1>
+				<p class="lead">
+					一个偏工程实践的技术博客，关注 Camera ISP、Linux 多媒体、生产者-消费者模型以及日常学习沉淀。
+				</p>
+				<div class="actions">
+					<a class="primary" href="https://github.com/Reynor-0" target="_blank" rel="noreferrer">
+						<svg viewBox="0 0 16 16" aria-hidden="true" width="18" height="18">
+							<path
+								fill="currentColor"
+								d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.5 7.5 0 0 1 8 3.36c.68 0 1.36.09 2 .27 1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"
+							/>
+						</svg>
+						GitHub
+					</a>
+					<a class="secondary" href="/blog">阅读文章</a>
+				</div>
+				<div class="portrait">
+					<Image src={AboutImage} width={320} height={320} alt="" />
+				</div>
+			</section>
+
+			<section class="latest" aria-labelledby="latest-title">
+				<div class="section-head">
+					<p>Latest Notes</p>
+					<h2 id="latest-title">最近文章</h2>
+				</div>
+				<div class="post-grid">
+					{
+						posts.map((post) => (
+							<a class="post-card" href={`/blog/${post.id}/`}>
+								<span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
+								<h3>{post.data.title}</h3>
+								<p>{post.data.description}</p>
+							</a>
+						))
+					}
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.home {
+		padding-top: 38px;
+	}
+
+	.hero {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		min-height: calc(100vh - 170px);
+		text-align: center;
+	}
+
+	.notice {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		max-width: 650px;
+		margin: 0 auto 34px;
+		padding: 0.78rem 1rem;
+		border: 1px solid rgba(77, 146, 199, 0.22);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.72);
+		box-shadow: 0 8px 24px rgba(77, 146, 199, 0.08);
+		color: rgb(var(--muted));
+		font-size: 0.95rem;
+	}
+
+	.notice p {
+		margin: 0;
+	}
+
+	h1 {
+		margin-bottom: 0.9rem;
+		font-weight: 900;
+	}
+
+	h1 span {
+		display: inline-block;
+		padding: 0 0.18em;
+		border: 2px dashed rgba(72, 125, 85, 0.75);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.7);
+		box-shadow: 0 10px 26px rgba(39, 45, 52, 0.08);
+	}
+
+	.lead {
+		max-width: 680px;
+		margin: 0 auto 26px;
+		color: rgb(var(--muted));
+		font-size: 1.12rem;
+	}
+
+	.actions {
+		display: flex;
+		justify-content: center;
+		gap: 14px;
+		margin-bottom: 56px;
+	}
+
+	.actions a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		padding: 0 1.2rem;
+		border-radius: 999px;
+		font-weight: 800;
+	}
+
+	.primary {
+		gap: 8px;
+		background: var(--accent);
+		color: #fff;
+		box-shadow: 0 12px 24px rgba(77, 146, 199, 0.25);
+	}
+
+	.primary:hover {
+		color: #fff;
+		background: var(--accent-strong);
+	}
+
+	.secondary {
+		background: rgba(255, 255, 255, 0.85);
+		color: rgb(var(--ink));
+		border: 1px solid rgb(var(--line));
+	}
+
+	.portrait {
+		position: relative;
+		width: 252px;
+		height: 252px;
+		margin-bottom: 26px;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 35%, rgba(179, 220, 170, 0.55), rgba(247, 213, 127, 0.3) 45%, transparent 72%);
+	}
+
+	.portrait::before {
+		position: absolute;
+		inset: -38px;
+		z-index: -1;
+		border-radius: 50%;
+		background: radial-gradient(circle, rgba(166, 216, 166, 0.35), rgba(255, 217, 125, 0.22), transparent 68%);
+		content: "";
+		filter: blur(8px);
+	}
+
+	.portrait img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border: 5px solid #fff;
+		border-radius: 50%;
+		box-shadow: var(--shadow);
+	}
+
+	.latest {
+		padding-top: 20px;
+	}
+
+	.section-head {
+		margin-bottom: 18px;
+		text-align: center;
+	}
+
+	.section-head p {
+		margin-bottom: 0.2rem;
+		color: var(--accent-strong);
+		font-weight: 800;
+		font-size: 0.86rem;
+		text-transform: uppercase;
+	}
+
+	.post-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+
+	.post-card {
+		display: block;
+		min-height: 178px;
+		padding: 1.15rem;
+		border: 1px solid rgba(var(--line), 0.88);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.76);
+		box-shadow: 0 8px 24px rgba(39, 45, 52, 0.05);
+	}
+
+	.post-card:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow);
+	}
+
+	.post-card span {
+		color: rgb(var(--muted));
+		font-size: 0.85rem;
+	}
+
+	.post-card h3 {
+		margin-top: 0.45rem;
+		font-size: 1.12rem;
+	}
+
+	.post-card p {
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.95rem;
+	}
+
+	@media (max-width: 860px) {
+		.post-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.actions {
+			flex-direction: column;
+		}
+
+		.portrait {
+			width: 210px;
+			height: 210px;
+		}
+	}
+</style>

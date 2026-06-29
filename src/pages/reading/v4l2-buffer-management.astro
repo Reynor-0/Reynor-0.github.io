@@ -1,0 +1,9 @@
+---
+import DetailPage from '../../layouts/DetailPage.astro';
+---
+
+<DetailPage section="阅读" sectionHref="/reading" eyebrow="Reading Note" title="V4L2 Buffer Management" description="Linux Media API 中 buffer 队列、ownership 和阻塞语义的阅读摘记。">
+	<section><h2>核心问题</h2><p>理解 V4L2 中 buffer 什么时候属于驱动、什么时候属于应用，以及 DQBUF/QBUF 如何表达所有权转移。</p></section>
+	<section><h2>摘记</h2><ul><li>不要覆盖消费者仍持有的 buffer。</li><li>非阻塞只改变等待语义，不定义丢帧策略。</li><li>poll/select 适合等待多个 fd，而不是忙轮询。</li></ul></section>
+	<section><h2>关联文章</h2><p><a href="/blog/producer-consumer-rate-mismatch/">生产者-消费者速率不匹配</a></p></section>
+</DetailPage>

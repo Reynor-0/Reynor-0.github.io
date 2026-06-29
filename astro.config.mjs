@@ -10,7 +10,7 @@ export default defineConfig({
 	integrations: [mdx(), sitemap()],
 	vite: {
 		ssr: {
-			external: ['picomatch'],
+			external: ['picomatch', 'piccolore'],
 		},
 	},
 	fonts: [

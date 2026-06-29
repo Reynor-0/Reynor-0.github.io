@@ -1,0 +1,101 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+type Props = {
+	section: string;
+	sectionHref: string;
+	title: string;
+	description: string;
+	eyebrow?: string;
+};
+
+const { section, sectionHref, title, description, eyebrow = section } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`${title} - ${SITE_TITLE}`} description={description} />
+	</head>
+	<body>
+		<Header />
+		<main class="detail-page">
+			<nav class="crumb">
+				<a href="/">主页</a>
+				<span>〉</span>
+				<a href={sectionHref}>{section}</a>
+				<span>〉</span>
+				<strong>{title}</strong>
+			</nav>
+			<header class="detail-head">
+				<p class="eyebrow">{eyebrow}</p>
+				<h1>{title}</h1>
+				<p>{description}</p>
+			</header>
+			<article class="detail-body">
+				<slot />
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.detail-page {
+		width: min(100% - 32px, 920px);
+	}
+
+	.crumb {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin-bottom: 20px;
+		color: rgb(var(--muted));
+		font-size: 0.92rem;
+	}
+
+	.detail-head {
+		margin-bottom: 28px;
+	}
+
+	.eyebrow {
+		margin-bottom: 0.25rem;
+		color: var(--accent-strong);
+		font-weight: 800;
+		text-transform: uppercase;
+	}
+
+	.detail-head p {
+		max-width: 720px;
+		color: rgb(var(--muted));
+	}
+
+	.detail-body {
+		display: grid;
+		gap: 22px;
+	}
+
+	.detail-body :global(section) {
+		padding: 1.35rem;
+		border: 1px solid rgba(var(--line), 0.9);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.84);
+		box-shadow: 0 8px 24px rgba(39, 45, 52, 0.05);
+	}
+
+	.detail-body :global(h2) {
+		font-size: 1.28rem;
+	}
+
+	.detail-body :global(p),
+	.detail-body :global(li) {
+		color: rgb(var(--muted));
+	}
+
+	.detail-body :global(pre) {
+		margin: 0;
+	}
+</style>

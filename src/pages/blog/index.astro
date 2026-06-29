@@ -1,9 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
@@ -13,102 +11,247 @@ const posts = (await getCollection('blog')).sort(
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
+		<BaseHead title={`技术 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
-		<main>
-			<section>
-				<ul>
+		<main class="docs-shell">
+			<aside class="sidebar" aria-label="文章导航">
+				<a class="sidebar-title active" href="/blog">导览</a>
+				{
+					posts.map((post) => (
+						<a href={`/blog/${post.id}/`}>
+							<strong>{post.data.title}</strong>
+						</a>
+					))
+				}
+			</aside>
+			<section class="content">
+				<nav class="crumb" aria-label="面包屑导航">
+					<a href="/">主页</a>
+					<span>〉</span>
+					<strong>技术</strong>
+				</nav>
+				<h1>技术</h1>
+				<div class="tips" id="tips">
+					<h2>Tips</h2>
+					<ul>
+						<li>这里收集图像处理、Linux 多媒体、系统设计和工程问题复盘。</li>
+						<li>文章尽量从问题定义、约束条件和设计取舍开始，而不是只记录结论。</li>
+					</ul>
+				</div>
+				<div class="article-list" id="article-list">
 					{
 						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
+							<a class="article-card" href={`/blog/${post.id}/`}>
+								<div>
+									<span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
+									<h2>{post.data.title}</h2>
+									<p>{post.data.description}</p>
+								</div>
+								<strong>阅读</strong>
+							</a>
 						))
 					}
-				</ul>
+				</div>
 			</section>
+			<aside class="toc" aria-label="页面说明">
+				<h2>目录</h2>
+				<a href="#article-list">文章列表</a>
+				<a href="#tips">阅读提示</a>
+			</aside>
 		</main>
 		<Footer />
 	</body>
 </html>
+
+<style>
+	.docs-shell {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 760px) 220px;
+		gap: 36px;
+		align-items: start;
+		width: min(100% - 32px, 1280px);
+	}
+
+	.sidebar {
+		position: sticky;
+		top: 92px;
+		max-height: calc(100vh - 130px);
+		overflow: auto;
+		padding-right: 8px;
+	}
+
+	.sidebar-title {
+		display: block;
+		margin-bottom: 10px;
+		padding: 0.72rem 0.75rem;
+		border-radius: 8px;
+		color: rgb(var(--muted));
+		font-weight: 800;
+		font-size: 0.94rem;
+		line-height: 1.35;
+	}
+
+	.sidebar-title:hover {
+		background: rgba(255, 255, 255, 0.74);
+		color: rgb(var(--ink));
+	}
+
+	.sidebar-title.active {
+		background: #eaf3ff;
+		color: var(--accent-strong);
+	}
+
+	.sidebar a {
+		display: block;
+		padding: 0.72rem 0.75rem;
+		border-radius: 8px;
+		color: rgb(var(--muted));
+	}
+
+	.sidebar a:hover {
+		background: rgba(255, 255, 255, 0.74);
+		color: rgb(var(--ink));
+	}
+
+	.sidebar strong {
+		display: block;
+		font-size: 0.94rem;
+		font-weight: 700;
+		line-height: 1.35;
+	}
+
+	.crumb {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-bottom: 18px;
+		color: rgb(var(--muted));
+		font-size: 0.92rem;
+	}
+
+	.crumb a {
+		color: rgb(var(--muted));
+	}
+
+	.crumb a:hover {
+		color: var(--accent-strong);
+	}
+
+	.crumb strong {
+		color: rgb(var(--ink));
+		font-weight: 700;
+	}
+
+	.content > h1 {
+		font-size: 2.15rem;
+	}
+
+	.tips {
+		margin: 28px 0;
+		padding: 1.2rem 1.3rem;
+		border: 1px solid rgba(var(--line), 0.92);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.86);
+		box-shadow: var(--shadow);
+	}
+
+	.tips h2 {
+		margin-bottom: 0.7rem;
+		font-size: 1rem;
+	}
+
+	.tips ul {
+		margin: 0;
+		padding-left: 1.2rem;
+		color: rgb(var(--muted));
+	}
+
+	.article-list {
+		display: grid;
+		gap: 14px;
+	}
+
+	.toc {
+		position: sticky;
+		top: 92px;
+		padding-left: 18px;
+		border-left: 1px solid rgba(var(--line), 0.95);
+	}
+
+	.toc h2 {
+		margin-bottom: 0.65rem;
+		font-size: 0.98rem;
+	}
+
+	.toc a {
+		display: block;
+		padding: 0.34rem 0;
+		color: rgb(var(--muted));
+		font-size: 0.9rem;
+		line-height: 1.35;
+	}
+
+	.toc a:hover {
+		color: rgb(var(--ink));
+	}
+
+	.article-card {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 18px;
+		padding: 1.1rem 1.2rem;
+		border: 1px solid rgba(var(--line), 0.88);
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.8);
+		color: rgb(var(--ink));
+	}
+
+	.article-card:hover {
+		transform: translateY(-2px);
+		box-shadow: var(--shadow);
+	}
+
+	.article-card span {
+		color: rgb(var(--muted));
+		font-size: 0.86rem;
+	}
+
+	.article-card h2 {
+		margin: 0.2rem 0 0.35rem;
+		font-size: 1.18rem;
+	}
+
+	.article-card p {
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.95rem;
+	}
+
+	.article-card > strong {
+		flex: 0 0 auto;
+		color: var(--accent-strong);
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 860px) {
+		.docs-shell {
+			grid-template-columns: 1fr;
+		}
+
+		.sidebar {
+			position: static;
+			max-height: none;
+			display: grid;
+			gap: 6px;
+		}
+
+		.toc {
+			display: none;
+		}
+	}
+</style>

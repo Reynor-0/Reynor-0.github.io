@@ -1,0 +1,35 @@
+---
+import DetailPage from '../../layouts/DetailPage.astro';
+
+const pipelineCode = `while (running) {
+    auto frame = capture.dequeue();
+    auto output = pipeline.process(frame);
+    videoDevice.queue(output);
+}`;
+---
+
+<DetailPage section="项目" sectionHref="/projects" eyebrow="Project" title="V4L2 Camera Pipeline Demo" description="从采集、缓冲、ISP 处理到虚拟摄像头输出的端到端实验。">
+	<section>
+		<h2>项目目标</h2>
+		<p>验证一个简化 Camera Pipeline 的完整链路：Producer 采集帧，Pipeline 做基础处理，Consumer 通过 V4L2 或显示端读取。</p>
+	</section>
+	<section>
+		<h2>架构草图</h2>
+		<pre><code>Sensor/File Input
+  -> Capture Queue
+  -> ISP Pipeline
+  -> V4L2 Loopback
+  -> ffplay / browser / app</code></pre>
+	</section>
+	<section>
+		<h2>代码片段</h2>
+		<pre><code>{pipelineCode}</code></pre>
+	</section>
+	<section>
+		<h2>相关链接</h2>
+		<ul>
+			<li><a href="https://github.com/Reynor-0" target="_blank" rel="noreferrer">GitHub Profile</a></li>
+			<li><a href="/blog/producer-consumer-rate-mismatch/">生产者-消费者速率不匹配</a></li>
+		</ul>
+	</section>
+</DetailPage>
