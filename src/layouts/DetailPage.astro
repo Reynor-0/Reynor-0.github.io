@@ -81,9 +81,9 @@ const { section, sectionHref, title, description, eyebrow = section } = Astro.pr
 	.detail-body :global(section) {
 		padding: 1.35rem;
 		border: 1px solid rgba(var(--line), 0.9);
-		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.84);
-		box-shadow: 0 8px 24px rgba(39, 45, 52, 0.05);
+		border-radius: var(--radius-md);
+		background: rgba(var(--card), 0.84);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.detail-body :global(h2) {

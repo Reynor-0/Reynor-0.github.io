@@ -4,53 +4,105 @@ const today = new Date();
 
 <footer>
 	<div class="footer-shell">
-		<p>Copyright © {today.getFullYear()} Reynor-0</p>
-		<div class="footer-links">
+		<div>
+			<strong>Reynor's Blog</strong>
+			<p>学习、记录，也保留那些还没有答案的问题。</p>
+		</div>
+		<nav aria-label="页脚导航">
+			<a href="/blog">技术</a>
+			<a href="/projects">项目</a>
+			<a href="/reading">阅读</a>
+			<a href="/notes">随笔</a>
 			<a href="https://github.com/Reynor-0" target="_blank" rel="noreferrer">GitHub</a>
 			<a href="/rss.xml">RSS</a>
-		</div>
+		</nav>
+	</div>
+	<div class="footer-bottom">
+		<p>© {today.getFullYear()} Reynor-0</p>
+		<p>Built with Astro</p>
 	</div>
 </footer>
 
 <style>
 	footer {
-		border-top: 1px solid rgba(var(--line), 0.9);
-		background: rgba(246, 248, 251, 0.88);
+		margin-top: 32px;
+		border-top: 1px solid rgba(var(--line), 0.8);
+		background:
+			radial-gradient(circle at 12% 0%, rgba(239, 191, 210, 0.23), transparent 24rem),
+			linear-gradient(135deg, rgba(237, 245, 253, 0.86), #fff 72%);
 		color: rgb(var(--muted));
 	}
 
 	.footer-shell {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
-		width: min(100% - 32px, 1180px);
+		width: min(100% - 40px, 1120px);
 		margin: 0 auto;
-		padding: 26px 0;
-		gap: 16px;
+		padding: 48px 0 34px;
+		gap: 40px;
+	}
+
+	.footer-shell strong {
+		display: block;
+		margin-bottom: 0.35rem;
+		color: #405675;
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.15rem;
+	}
+
+	.footer-shell p {
+		margin: 0;
 		font-size: 0.92rem;
 	}
 
-	p {
+	.footer-shell nav {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 8px 20px;
+	}
+
+	.footer-shell nav a {
+		color: rgb(var(--muted));
+		font-size: 0.9rem;
+	}
+
+	.footer-shell nav a:hover {
+		color: var(--accent-strong);
+	}
+
+	.footer-bottom {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: min(100% - 40px, 1120px);
+		margin: 0 auto;
+		padding: 20px 0 24px;
+		border-top: 1px solid rgba(var(--line), 0.78);
+		font-size: 0.78rem;
+	}
+
+	.footer-bottom p {
 		margin: 0;
 	}
 
-	.footer-links {
-		display: flex;
-		gap: 16px;
-	}
-
-	.footer-links a {
-		color: rgb(var(--muted));
-	}
-
-	.footer-links a:hover {
-		color: rgb(var(--ink));
-	}
-
-	@media (max-width: 560px) {
+	@media (max-width: 680px) {
 		.footer-shell {
-			align-items: flex-start;
+			width: min(100% - 24px, 1120px);
+			padding-top: 40px;
 			flex-direction: column;
+		}
+
+		.footer-shell nav {
+			justify-content: flex-start;
+		}
+
+		.footer-bottom {
+			align-items: flex-start;
+			width: min(100% - 24px, 1120px);
+			flex-direction: column;
+			gap: 4px;
 		}
 	}
 </style>

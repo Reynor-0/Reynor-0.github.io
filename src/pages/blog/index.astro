@@ -70,10 +70,10 @@ const posts = (await getCollection('blog')).sort(
 <style>
 	.docs-shell {
 		display: grid;
-		grid-template-columns: 260px minmax(0, 760px) 220px;
-		gap: 36px;
+		grid-template-columns: 240px minmax(0, 780px) 210px;
+		gap: 34px;
 		align-items: start;
-		width: min(100% - 32px, 1280px);
+		width: min(100% - 40px, 1300px);
 	}
 
 	.sidebar {
@@ -88,7 +88,7 @@ const posts = (await getCollection('blog')).sort(
 		display: block;
 		margin-bottom: 10px;
 		padding: 0.72rem 0.75rem;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		color: rgb(var(--muted));
 		font-weight: 800;
 		font-size: 0.94rem;
@@ -96,24 +96,24 @@ const posts = (await getCollection('blog')).sort(
 	}
 
 	.sidebar-title:hover {
-		background: rgba(255, 255, 255, 0.74);
+		background: rgba(var(--card), 0.74);
 		color: rgb(var(--ink));
 	}
 
 	.sidebar-title.active {
-		background: #eaf3ff;
+		background: var(--accent-soft);
 		color: var(--accent-strong);
 	}
 
 	.sidebar a {
 		display: block;
 		padding: 0.72rem 0.75rem;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		color: rgb(var(--muted));
 	}
 
 	.sidebar a:hover {
-		background: rgba(255, 255, 255, 0.74);
+		background: rgba(var(--card), 0.74);
 		color: rgb(var(--ink));
 	}
 
@@ -154,9 +154,9 @@ const posts = (await getCollection('blog')).sort(
 		margin: 28px 0;
 		padding: 1.2rem 1.3rem;
 		border: 1px solid rgba(var(--line), 0.92);
-		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.86);
-		box-shadow: var(--shadow);
+		border-radius: var(--radius-md);
+		background: rgba(var(--card), 0.86);
+		box-shadow: var(--shadow-sm);
 	}
 
 	.tips h2 {
@@ -206,13 +206,14 @@ const posts = (await getCollection('blog')).sort(
 		gap: 18px;
 		padding: 1.1rem 1.2rem;
 		border: 1px solid rgba(var(--line), 0.88);
-		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.8);
+		border-radius: var(--radius-md);
+		background: rgba(var(--card), 0.8);
 		color: rgb(var(--ink));
 	}
 
 	.article-card:hover {
-		transform: translateY(-2px);
+		border-color: rgba(134, 169, 212, 0.4);
+		transform: translateY(-3px);
 		box-shadow: var(--shadow);
 	}
 

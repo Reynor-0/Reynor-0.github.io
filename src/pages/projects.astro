@@ -73,9 +73,9 @@ const projects = [
 	.eyebrow { margin-bottom: 0.25rem; color: var(--accent-strong); font-weight: 800; text-transform: uppercase; }
 	.hero p { color: rgb(var(--muted)); }
 	.project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-	.project-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 280px; padding: 1.25rem; border: 1px solid rgba(var(--line), 0.9); border-radius: 8px; background: rgba(255, 255, 255, 0.84); box-shadow: 0 8px 24px rgba(39, 45, 52, 0.05); color: rgb(var(--ink)); }
-	.project-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-	.status { display: inline-block; margin-bottom: 1rem; padding: 0.18rem 0.55rem; border-radius: 999px; background: #eaf3ff; color: var(--accent-strong); font-size: 0.82rem; font-weight: 800; }
+	.project-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 280px; padding: 1.4rem; border: 1px solid rgba(var(--line), 0.9); border-radius: var(--radius-md); background: rgba(var(--card), 0.84); box-shadow: var(--shadow-sm); color: rgb(var(--ink)); }
+	.project-card:hover { border-color: rgba(134, 169, 212, 0.4); transform: translateY(-3px); box-shadow: var(--shadow); }
+	.status { display: inline-block; margin-bottom: 1rem; padding: 0.18rem 0.55rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent-strong); font-size: 0.82rem; font-weight: 800; }
 	.project-card h2 { font-size: 1.22rem; }
 	.project-card p { color: rgb(var(--muted)); font-size: 0.95rem; }
 	.project-card ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0 0; padding: 0; list-style: none; }

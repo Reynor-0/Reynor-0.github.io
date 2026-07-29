@@ -14,9 +14,19 @@ type Heading = {
 type Props = CollectionEntry<'blog'>['data'] & {
 	currentId?: string;
 	headings?: Heading[];
+	readingMinutes?: number;
 };
 
-const { title, description, pubDate, updatedDate, heroImage, currentId, headings = [] } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	currentId,
+	headings = [],
+	readingMinutes = 1,
+} = Astro.props;
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
@@ -28,6 +38,7 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 		<BaseHead title={title} description={description} image={heroImage} />
 	</head>
 	<body>
+		<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
 		<Header />
 		<main class="docs-shell">
 			<aside class="sidebar" aria-label="文章导航">
@@ -50,10 +61,12 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 					<strong>{title}</strong>
 				</nav>
 				<header class="post-head">
+					<p class="post-kicker">TECHNICAL FIELD NOTE</p>
 					<h1>{title}</h1>
 					<p>{description}</p>
 					<div class="meta">
 						<FormattedDate date={pubDate} />
+						<span>{readingMinutes} 分钟阅读</span>
 						{
 							updatedDate && (
 								<span>
@@ -88,6 +101,7 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 </html>
 
 <script>
+	const readingProgress = document.querySelector('[data-reading-progress]');
 	const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
 	const headingPairs = tocLinks
 		.map((link) => {
@@ -127,15 +141,75 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 		window.addEventListener('resize', updateActiveToc);
 		updateActiveToc();
 	}
+
+	function updateReadingProgress() {
+		if (!readingProgress) return;
+		const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+		const progress = scrollable > 0 ? Math.min(window.scrollY / scrollable, 1) : 0;
+		readingProgress.style.transform = `scaleX(${progress})`;
+	}
+
+	document.querySelectorAll('.prose pre').forEach((pre) => {
+		const code = pre.querySelector('code');
+		if (!code || pre.querySelector('.code-toolbar')) return;
+
+		const toolbar = document.createElement('div');
+		const language = document.createElement('span');
+		const copyButton = document.createElement('button');
+		const languageClass = Array.from(code.classList).find((item) => item.startsWith('language-'));
+
+		toolbar.className = 'code-toolbar';
+		language.textContent = languageClass?.replace('language-', '') || pre.dataset.language || 'CODE';
+		copyButton.type = 'button';
+		copyButton.textContent = '复制';
+		copyButton.setAttribute('aria-label', '复制代码');
+		copyButton.addEventListener('click', async () => {
+			await navigator.clipboard.writeText(code.textContent || '');
+			copyButton.textContent = '已复制';
+			window.setTimeout(() => {
+				copyButton.textContent = '复制';
+			}, 1600);
+		});
+
+		toolbar.append(language, copyButton);
+		pre.prepend(toolbar);
+	});
+
+	document.querySelectorAll('.prose h2[id], .prose h3[id]').forEach((heading) => {
+		if (heading.querySelector('.heading-anchor')) return;
+		const anchor = document.createElement('a');
+		anchor.className = 'heading-anchor';
+		anchor.href = `#${heading.id}`;
+		anchor.textContent = '#';
+		anchor.setAttribute('aria-label', `链接到 ${heading.textContent || '本节'}`);
+		heading.append(anchor);
+	});
+
+	window.addEventListener('scroll', updateReadingProgress, { passive: true });
+	window.addEventListener('resize', updateReadingProgress);
+	updateReadingProgress();
 </script>
 
 <style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 100;
+		width: 100%;
+		height: 3px;
+		background: var(--accent);
+		transform: scaleX(0);
+		transform-origin: left center;
+		will-change: transform;
+	}
+
 	.docs-shell {
 		display: grid;
-		grid-template-columns: 260px minmax(0, 760px) 220px;
-		gap: 36px;
+		grid-template-columns: 240px minmax(0, 780px) 210px;
+		gap: 34px;
 		align-items: start;
-		width: min(100% - 32px, 1280px);
+		width: min(100% - 40px, 1300px);
 	}
 
 	.sidebar {
@@ -150,7 +224,7 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 		display: block;
 		margin-bottom: 10px;
 		padding: 0.72rem 0.75rem;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		color: rgb(var(--muted));
 		font-weight: 800;
 		font-size: 0.94rem;
@@ -158,24 +232,24 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 	}
 
 	.sidebar-title:hover {
-		background: rgba(255, 255, 255, 0.74);
+		background: rgba(var(--card), 0.74);
 		color: rgb(var(--ink));
 	}
 
 	.sidebar a {
 		display: block;
 		padding: 0.72rem 0.75rem;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		color: rgb(var(--muted));
 	}
 
 	.sidebar a:hover {
-		background: rgba(255, 255, 255, 0.74);
+		background: rgba(var(--card), 0.74);
 		color: rgb(var(--ink));
 	}
 
 	.sidebar a.active {
-		background: #eaf3ff;
+		background: var(--accent-soft);
 		color: var(--accent-strong);
 	}
 
@@ -210,11 +284,21 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 	}
 
 	.post-head {
-		margin-bottom: 28px;
+		margin-bottom: 34px;
+		padding-bottom: 28px;
+		border-bottom: 1px solid rgba(var(--line), 0.92);
+	}
+
+	.post-kicker {
+		margin-bottom: 0.7rem;
+		color: var(--accent-strong) !important;
+		font-size: 0.72rem !important;
+		font-weight: 900;
+		letter-spacing: 0.15em;
 	}
 
 	h1 {
-		font-size: clamp(2rem, 5vw, 2.65rem);
+		font-size: clamp(2.2rem, 5vw, 3.25rem);
 	}
 
 	.post-head p {
@@ -231,17 +315,26 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 		font-size: 0.92rem;
 	}
 
+	.meta > * + *::before {
+		margin-right: 14px;
+		color: rgb(var(--line));
+		content: "•";
+	}
+
 	.prose {
 		padding-bottom: 24px;
+		font-size: 1.01rem;
 	}
 
 	.prose :global(h2) {
+		position: relative;
 		margin-top: 2.4rem;
 		padding-top: 0.2rem;
-		font-size: 1.52rem;
+		font-size: 1.62rem;
 	}
 
 	.prose :global(h3) {
+		position: relative;
 		margin-top: 1.7rem;
 		font-size: 1.18rem;
 	}
@@ -254,6 +347,57 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 	.prose :global(ul),
 	.prose :global(ol) {
 		padding-left: 1.35rem;
+	}
+
+	.prose :global(.heading-anchor) {
+		margin-left: 0.45rem;
+		color: rgba(134, 169, 212, 0.52);
+		font-weight: 500;
+		opacity: 0;
+	}
+
+	.prose :global(h2:hover .heading-anchor),
+	.prose :global(h3:hover .heading-anchor),
+	.prose :global(.heading-anchor:focus-visible) {
+		opacity: 1;
+	}
+
+	.prose :global(pre:has(.code-toolbar)) {
+		padding-top: 3.3rem;
+	}
+
+	.prose :global(.code-toolbar) {
+		position: absolute;
+		top: 0;
+		left: 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 0.58rem 0.8rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+		color: rgba(255, 255, 255, 0.5);
+		font-family: var(--font-atkinson), sans-serif;
+		font-size: 0.68rem;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.prose :global(.code-toolbar button) {
+		padding: 0.18rem 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		border-radius: 5px;
+		background: rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.7);
+		cursor: pointer;
+		font: inherit;
+		letter-spacing: 0;
+	}
+
+	.prose :global(.code-toolbar button:hover) {
+		background: rgba(255, 255, 255, 0.12);
+		color: #fff;
 	}
 
 	.toc {
@@ -290,7 +434,7 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 	}
 
 	.toc a.active {
-		color: rgb(var(--ink));
+		color: var(--accent-strong);
 		font-weight: 800;
 	}
 
