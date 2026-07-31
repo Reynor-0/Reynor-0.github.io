@@ -29,7 +29,7 @@ const today = new Date();
 		border-top: 1px solid rgba(var(--line), 0.8);
 		background:
 			radial-gradient(circle at 12% 0%, rgba(239, 191, 210, 0.23), transparent 24rem),
-			linear-gradient(135deg, rgba(237, 245, 253, 0.86), #fff 72%);
+			linear-gradient(135deg, rgba(var(--soft), 0.86), rgb(var(--card)) 72%);
 		color: rgb(var(--muted));
 	}
 
@@ -46,7 +46,7 @@ const today = new Date();
 	.footer-shell strong {
 		display: block;
 		margin-bottom: 0.35rem;
-		color: #405675;
+		color: var(--heading);
 		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 		font-size: 1.15rem;
 	}

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
+import BlogSidebar from '../../components/BlogSidebar.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
@@ -18,16 +19,7 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main class="docs-shell">
-			<aside class="sidebar" aria-label="文章导航">
-				<a class="sidebar-title active" href="/blog">导览</a>
-				{
-					posts.map((post) => (
-						<a href={`/blog/${post.id}/`}>
-							<strong>{post.data.title}</strong>
-						</a>
-					))
-				}
-			</aside>
+			<BlogSidebar posts={posts} overviewActive />
 			<section class="content">
 				<nav class="crumb" aria-label="面包屑导航">
 					<a href="/">主页</a>
@@ -74,54 +66,6 @@ const posts = (await getCollection('blog')).sort(
 		gap: 34px;
 		align-items: start;
 		width: min(100% - 40px, 1300px);
-	}
-
-	.sidebar {
-		position: sticky;
-		top: 92px;
-		max-height: calc(100vh - 130px);
-		overflow: auto;
-		padding-right: 8px;
-	}
-
-	.sidebar-title {
-		display: block;
-		margin-bottom: 10px;
-		padding: 0.72rem 0.75rem;
-		border-radius: var(--radius-sm);
-		color: rgb(var(--muted));
-		font-weight: 800;
-		font-size: 0.94rem;
-		line-height: 1.35;
-	}
-
-	.sidebar-title:hover {
-		background: rgba(var(--card), 0.74);
-		color: rgb(var(--ink));
-	}
-
-	.sidebar-title.active {
-		background: var(--accent-soft);
-		color: var(--accent-strong);
-	}
-
-	.sidebar a {
-		display: block;
-		padding: 0.72rem 0.75rem;
-		border-radius: var(--radius-sm);
-		color: rgb(var(--muted));
-	}
-
-	.sidebar a:hover {
-		background: rgba(var(--card), 0.74);
-		color: rgb(var(--ink));
-	}
-
-	.sidebar strong {
-		display: block;
-		font-size: 0.94rem;
-		font-weight: 700;
-		line-height: 1.35;
 	}
 
 	.crumb {
@@ -242,13 +186,6 @@ const posts = (await getCollection('blog')).sort(
 	@media (max-width: 860px) {
 		.docs-shell {
 			grid-template-columns: 1fr;
-		}
-
-		.sidebar {
-			position: static;
-			max-height: none;
-			display: grid;
-			gap: 6px;
 		}
 
 		.toc {

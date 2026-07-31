@@ -118,6 +118,8 @@ const posts = (await getCollection('blog'))
 		object-fit: cover;
 		object-position: center bottom;
 		border-radius: 0;
+		filter: var(--hero-image-filter);
+		transition: filter 220ms ease;
 	}
 
 	.hero-content {
@@ -134,21 +136,21 @@ const posts = (await getCollection('blog'))
 
 	h1 {
 		margin-bottom: 1.15rem;
-		color: #405675;
+		color: var(--hero-heading);
 		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 		font-size: clamp(2.7rem, 5.3vw, 4.8rem);
 		font-weight: 700;
 		letter-spacing: -0.045em;
-		text-shadow: 0 2px 18px rgba(255, 255, 255, 0.72);
+		text-shadow: 0 2px 18px rgba(var(--hero-shadow), 0.72);
 	}
 
 	.hero-content > p {
 		max-width: 620px;
 		margin-bottom: 1.8rem;
-		color: #607694;
+		color: var(--hero-muted);
 		font-size: clamp(1rem, 1.5vw, 1.12rem);
 		line-height: 1.8;
-		text-shadow: 0 1px 12px rgba(255, 255, 255, 0.9);
+		text-shadow: 0 1px 12px rgba(var(--hero-shadow), 0.9);
 	}
 
 	.hero-content > a,
@@ -163,17 +165,17 @@ const posts = (await getCollection('blog'))
 	.hero-content > a {
 		min-height: 48px;
 		padding: 0 1.25rem;
-		border: 1px solid rgba(255, 255, 255, 0.78);
+		border: 1px solid rgba(var(--glass), 0.78);
 		border-radius: 12px;
-		background: rgba(255, 255, 255, 0.62);
+		background: rgba(var(--glass), 0.62);
 		box-shadow: 0 12px 30px rgba(85, 118, 160, 0.12);
 		backdrop-filter: blur(14px);
-		color: #4f709e;
+		color: var(--accent-strong);
 	}
 
 	.hero-content > a:hover {
-		background: rgba(255, 255, 255, 0.82);
-		color: #3f6495;
+		background: rgba(var(--glass), 0.82);
+		color: var(--link-hover);
 		transform: translateY(-2px);
 	}
 
@@ -229,7 +231,7 @@ const posts = (await getCollection('blog'))
 
 	.recent-head h2 {
 		margin-bottom: 0.5rem;
-		color: #405675;
+		color: var(--heading);
 		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 		font-size: clamp(2rem, 4vw, 3rem);
 	}
@@ -284,14 +286,14 @@ const posts = (await getCollection('blog'))
 
 	.record time {
 		margin-bottom: 0.75rem;
-		color: #8b9ab0;
+		color: rgb(var(--muted));
 		font-size: 0.78rem;
 		letter-spacing: 0.05em;
 	}
 
 	.record h3 {
 		margin-bottom: 0.65rem;
-		color: #405675;
+		color: var(--heading);
 		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 		font-size: 1.26rem;
 		line-height: 1.45;
@@ -340,14 +342,14 @@ const posts = (await getCollection('blog'))
 		border-radius: 22px;
 		background:
 			radial-gradient(circle at 92% 0%, rgba(239, 191, 210, 0.2), transparent 16rem),
-			linear-gradient(135deg, rgba(237, 245, 253, 0.88), rgba(255, 255, 255, 0.96));
+			linear-gradient(135deg, rgba(var(--soft), 0.88), rgba(var(--card), 0.96));
 		gap: 28px;
 	}
 
 	.personal-note p {
 		max-width: 740px;
 		margin: 0;
-		color: #647894;
+		color: rgb(var(--muted));
 	}
 
 	.personal-note a {

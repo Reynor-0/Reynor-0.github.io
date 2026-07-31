@@ -1,6 +1,7 @@
 ---
 title: 'ARM基础知识整理'
 description: '系统整理 ARM 架构、处理器模式、寄存器、指令、寻址方式、异常、中断以及异常向量表等基础内容。'
+category: '架构'
 pubDate: 'Jul 07 2026'
 heroImage: '../../assets/blog-placeholder-4.jpg'
 ---

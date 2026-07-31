@@ -1,6 +1,7 @@
 ---
   title: '设备树基础：从 DTS 到驱动匹配'
   description: '介绍整理有关设备树的内容。'
+  category: '操作系统'
   pubDate: 'Jun 29 2026'
   heroImage: '../../assets/blog-placeholder-4.jpg'
 ---

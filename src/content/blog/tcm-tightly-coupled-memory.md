@@ -1,6 +1,7 @@
 ---
 title: 'TCM：紧耦合 CPU 内存学习笔记'
 description: '整理 Tightly Coupled Memory 的基本概念、和 Cache/SRAM 的区别、典型使用场景、多核 TCM 地址别名机制以及软件开发中的注意事项。'
+category: '架构'
 pubDate: 'Jul 02 2026'
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: 'IMX415 驱动学习'
 description: '学习整理Linux项目中关于IMX415驱动'
+category: '驱动'
 pubDate: 'Jul 09 2026'
 ---
 
