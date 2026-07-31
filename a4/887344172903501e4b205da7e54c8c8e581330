@@ -1,0 +1,63 @@
+src/content.config.ts
+  s_8eeccb63730314::t_575f0659bb0745 13
+src/content/blog/imx415_driver.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+  s_8eeccb63730314::t_466f1a6607b1db 1140
+src/layouts/BlogPost.astro
+  s_8eeccb63730314::t_466f1a6607b1db 4,45
+src/content/blog/lib.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/content/blog/producer-consumer-rate-mismatch.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/content/blog/tca9539.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/content/blog/tcm-tightly-coupled-memory.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+  s_8eeccb63730314::t_466f1a6607b1db 708
+src/content/blog/what-is-demosaic.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/components/Footer.astro
+  s_8eeccb63730314::t_575f0659bb0745 32,49
+src/content/blog/ethernet.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/content/blog/arm.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/pages/blog/index.astro
+  s_8eeccb63730314::t_466f1a6607b1db 4,22
+src/content/blog/soc_camera_data_flow.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/content/blog/phy88q1110.md
+  s_8eeccb63730314::t_466f1a6607b1db 3,5
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/components/BaseHead.astro
+  s_8eeccb63730314::t_575f0659bb0745 24-41
+src/content/blog/device-tree.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/components/Header.astro
+  s_8eeccb63730314::t_7dd979acb370b0 17-34,39-64,72,96,98,142-194,211,213-217
+src/pages/index.astro
+  s_8eeccb63730314::t_808d26b7431c2a 121-122,139,144,150,153,168,170,173,177-178,234,289,296,345,352
+src/content/blog/write_imx415_driver.md
+  s_8eeccb63730314::t_575f0659bb0745 4
+src/styles/global.css
+  s_8eeccb63730314::t_575f0659bb0745 12,14-22,30-56,106,151-161
+src/components/BlogSidebar.astro
+  s_8eeccb63730314::t_466f1a6607b1db 1-10,12-69,71-96,98-118,120-130,132-165,167-207,209-214,216-250
+  s_8eeccb63730314::t_575f0659bb0745 11,70,97,119,131,166,208,215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "a4887344172903501e4b205da7e54c8c8e581330",
+  "prompts": {},
+  "sessions": {
+    "s_8eeccb63730314": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa80c-71e5-76a3-b545-4507fbbf2beb",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
