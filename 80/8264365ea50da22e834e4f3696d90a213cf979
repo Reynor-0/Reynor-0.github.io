@@ -1,0 +1,109 @@
+src/pages/about.astro
+  s_8eeccb63730314::t_0d0e651af44a09 16-17,19-22,24-27,30-32,34-36,46-48,51-53,56-61,64-65,68,70,73,77,79-80,83,85-87,90-93,96-98,104-106,109-115,118-119,121-123,125,127-132,135-139,142,146-147,150,154-156,159,161-162,165-166,170
+  s_8eeccb63730314::t_1cd632f821348d 11,18,23,28-29,33,45,49-50,62-63,66-67,69,71-72,74-76,78,81-82,84,94-95,100,116-117,120,124,126,133-134,140-141,143-145,148-149,153,157-158,160,163-164,167-169,171
+src/pages/tags/index.astro
+  s_8eeccb63730314::t_512c81b7fbfc4d 2-20,26,30-54,56-61,63-68,70,72,82-251
+src/components/HeaderLink.astro
+  s_8eeccb63730314::t_dec1e962ecc9de 17-19
+src/content/blog/tca9539.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/tcm-tightly-coupled-memory.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/producer-consumer-rate-mismatch.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/pages/search.astro
+  s_8eeccb63730314::t_fc4fcd55c2efa0 2-3,9-11,17,21-45,47-65,67-75,82-135,137-306
+src/content/blog/blog-as-knowledge-base.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-11
+src/content/blog/ethernet.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/demosaic-algorithm-notes.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-16,19-24
+src/components/GiscusComments.astro
+  s_8eeccb63730314::t_1f2ff9ff4b64b7 1-69,71-72,74-161
+  s_8eeccb63730314::t_afcdf5b02c46c0 70,73
+src/content/blog/arm.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/personal-blog-system.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-16,18-23
+src/components/Footer.astro
+  s_8eeccb63730314::t_a20f2bdcfb94bf 12-15
+src/content/blog/ahd-demosaicing.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-17
+src/content/blog/keep-the-problem-context.md
+  s_8eeccb63730314::t_9b25f14212b26a 1-11
+src/content/blog/backpressure-streaming.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-11
+src/content/blog/v4l2-camera-pipeline.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-16,20-36
+src/content/blog/lib.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/soc_camera_data_flow.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/write_imx415_driver.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/components/ArticleRow.astro
+  s_8eeccb63730314::t_0c9a234c2978bc 3,20
+  s_8eeccb63730314::t_9431ad0c35240f 1-2,4-19,21-35,37-137,139-159,161-163
+  s_8eeccb63730314::t_dec1e962ecc9de 36,138,160
+src/layouts/BlogPost.astro
+  s_8eeccb63730314::t_1d2cde87dd7389 26-27,55,60,74,76,209,270-290
+  s_8eeccb63730314::t_1f2ff9ff4b64b7 7,81
+  s_8eeccb63730314::t_0c9a234c2978bc 9,75
+src/components/Header.astro
+  s_8eeccb63730314::t_bc992b3845408e 2,10-12,17-18,22-31,46-91,114,119-201,245,256-257,260-261,265-266,276,279-294,342-459,491-494
+  s_8eeccb63730314::t_a20f2bdcfb94bf 33-34,274-275,277-278
+src/components/BlogSidebar.astro
+  s_8eeccb63730314::t_a20f2bdcfb94bf 20-31,66-84,102-109,114,117,130-133,137-158
+  s_8eeccb63730314::t_dec1e962ecc9de 134-136
+  s_8eeccb63730314::t_0c9a234c2978bc 3,12
+src/pages/blog/index.astro
+  s_8eeccb63730314::t_19c66eee76dbee 3,13,19,23-28,30-53,60,64,66-71,74-75,77-79,82-86,89,94-106,109-113,116-122,125-129,132-133,136,138,140-141,144-148,151-152,155,158-160,163-171,174-176
+src/content/blog/device-tree.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/content/blog/v4l2-buffer-management.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-21
+src/content/blog/realtime-vs-integrity.md
+  s_8eeccb63730314::t_9b25f14212b26a 1-11
+src/content/blog/imx415_driver.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+src/pages/index.astro
+  s_8eeccb63730314::t_b6486ec46a2570 4,12-23,36,48-58,62-67,69-80,82-99,101-108,142,149,152,155,196-199,201-202,205-207,209,211,214-215,218-229,231-232,235-239,242,244-245,248-255,258-259,262-271,274-278,281,283-296,299-300,303,306-319,321,324-327,330-333,336-340,343-349,352-353,356-357,360-403,407-408,415-420,422-424,427-432,434,436,438,445-446,449-451,454-455,458-459,462-463,466,470-472
+  s_8eeccb63730314::t_989d6267eee2b1 39,41-43,128,150,156,159,161,164,166,170-171,173,175-177,179,182-188,413-414,442,473-479
+  s_8eeccb63730314::t_0c9a234c2978bc 10,81
+src/content/blog/csapp.md
+  s_8eeccb63730314::t_9b25f14212b26a 2-6,9-11
+astro.config.mjs
+  s_8eeccb63730314::t_8059d4ed47b8bc 11-24
+  s_8eeccb63730314::t_eb553e35742373 25
+.github/workflows/deploy.yml
+  s_8eeccb63730314::t_b87f552b41b769 16-20,27-28
+src/content.config.ts
+  s_8eeccb63730314::t_8059d4ed47b8bc 13-14
+src/content/blog/what-is-demosaic.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+.env.example
+  s_8eeccb63730314::t_1f2ff9ff4b64b7 1-5
+src/lib/blog.ts
+  s_8eeccb63730314::t_0c9a234c2978bc 1,8-10,12
+src/pages/tags/[tag].astro
+  s_8eeccb63730314::t_512c81b7fbfc4d 2-8,11-12,15-31,37,41-43,45-48,50-53,60-61,67,70,73-74,77-80,83-88,91-95,98-100,103-105,108-112,115-118
+src/content/blog/phy88q1110.md
+  s_8eeccb63730314::t_9b25f14212b26a 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "808264365ea50da22e834e4f3696d90a213cf979",
+  "prompts": {},
+  "sessions": {
+    "s_8eeccb63730314": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa80c-71e5-76a3-b545-4507fbbf2beb",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
