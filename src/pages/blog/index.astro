@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import ArticleRow from '../../components/ArticleRow.astro';
 import BaseHead from '../../components/BaseHead.astro';
 import BlogSidebar from '../../components/BlogSidebar.astro';
 import Footer from '../../components/Footer.astro';
@@ -9,187 +10,170 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const projectCount = posts.filter((post) => post.data.category === '项目').length;
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={`技术 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`文章 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
 	</head>
 	<body>
 		<Header />
-		<main class="docs-shell">
-			<BlogSidebar posts={posts} overviewActive />
-			<section class="content">
-				<nav class="crumb" aria-label="面包屑导航">
-					<a href="/">主页</a>
-					<span>〉</span>
-					<strong>技术</strong>
-				</nav>
-				<h1>技术</h1>
-				<div class="tips" id="tips">
-					<h2>Tips</h2>
-					<ul>
-						<li>这里收集图像处理、Linux 多媒体、系统设计和工程问题复盘。</li>
-						<li>文章尽量从问题定义、约束条件和设计取舍开始，而不是只记录结论。</li>
-					</ul>
+		<main class="articles-shell">
+			<header class="page-head">
+				<div>
+					<p class="eyebrow">ALL ARTICLES</p>
+					<h1>所有文章</h1>
+					<p>把问题、判断与答案放回同一条时间线。</p>
 				</div>
-				<div class="article-list" id="article-list">
-					{
-						posts.map((post) => (
-							<a class="article-card" href={`/blog/${post.id}/`}>
-								<div>
-									<span>{post.data.pubDate.toLocaleDateString('zh-CN')}</span>
-									<h2>{post.data.title}</h2>
-									<p>{post.data.description}</p>
-								</div>
-								<strong>阅读</strong>
-							</a>
-						))
-					}
-				</div>
-			</section>
-			<aside class="toc" aria-label="页面说明">
-				<h2>目录</h2>
-				<a href="#article-list">文章列表</a>
-				<a href="#tips">阅读提示</a>
-			</aside>
+				<a class="search-shortcut" href="/search">
+					<svg viewBox="0 0 20 20" aria-hidden="true">
+						<circle cx="8.5" cy="8.5" r="5.2" />
+						<path d="m12.4 12.4 4 4" />
+					</svg>
+					搜索 {posts.length} 篇文章
+				</a>
+			</header>
+
+			<div class="article-layout">
+				<BlogSidebar posts={posts} overviewActive />
+				<section class="article-main" aria-labelledby="article-list-title">
+					<div class="list-head">
+						<div>
+							<h2 id="article-list-title">最近更新</h2>
+							<p>包含技术笔记、问题复盘、阅读摘记与项目记录。</p>
+						</div>
+						<span>{posts.length} 篇文章 · {projectCount} 个项目</span>
+					</div>
+					<div class="article-list">
+						{posts.map((post) => <ArticleRow post={post} />)}
+					</div>
+				</section>
+			</div>
 		</main>
 		<Footer />
 	</body>
 </html>
 
 <style>
-	.docs-shell {
-		display: grid;
-		grid-template-columns: 240px minmax(0, 780px) 210px;
-		gap: 34px;
-		align-items: start;
+	.articles-shell {
 		width: min(100% - 40px, 1300px);
 	}
 
-	.crumb {
+	.page-head {
 		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-		margin-bottom: 18px;
-		color: rgb(var(--muted));
-		font-size: 0.92rem;
-	}
-
-	.crumb a {
-		color: rgb(var(--muted));
-	}
-
-	.crumb a:hover {
-		color: var(--accent-strong);
-	}
-
-	.crumb strong {
-		color: rgb(var(--ink));
-		font-weight: 700;
-	}
-
-	.content > h1 {
-		font-size: 2.15rem;
-	}
-
-	.tips {
-		margin: 28px 0;
-		padding: 1.2rem 1.3rem;
-		border: 1px solid rgba(var(--line), 0.92);
-		border-radius: var(--radius-md);
-		background: rgba(var(--card), 0.86);
-		box-shadow: var(--shadow-sm);
-	}
-
-	.tips h2 {
-		margin-bottom: 0.7rem;
-		font-size: 1rem;
-	}
-
-	.tips ul {
-		margin: 0;
-		padding-left: 1.2rem;
-		color: rgb(var(--muted));
-	}
-
-	.article-list {
-		display: grid;
-		gap: 14px;
-	}
-
-	.toc {
-		position: sticky;
-		top: 92px;
-		padding-left: 18px;
-		border-left: 1px solid rgba(var(--line), 0.95);
-	}
-
-	.toc h2 {
-		margin-bottom: 0.65rem;
-		font-size: 0.98rem;
-	}
-
-	.toc a {
-		display: block;
-		padding: 0.34rem 0;
-		color: rgb(var(--muted));
-		font-size: 0.9rem;
-		line-height: 1.35;
-	}
-
-	.toc a:hover {
-		color: rgb(var(--ink));
-	}
-
-	.article-card {
-		display: flex;
-		align-items: center;
+		align-items: flex-end;
 		justify-content: space-between;
-		gap: 18px;
-		padding: 1.1rem 1.2rem;
-		border: 1px solid rgba(var(--line), 0.88);
-		border-radius: var(--radius-md);
-		background: rgba(var(--card), 0.8);
-		color: rgb(var(--ink));
+		margin-bottom: 42px;
+		padding-bottom: 34px;
+		gap: 32px;
+		border-bottom: 1px solid rgba(var(--line), 0.86);
 	}
 
-	.article-card:hover {
-		border-color: rgba(134, 169, 212, 0.4);
-		transform: translateY(-3px);
-		box-shadow: var(--shadow);
+	.eyebrow {
+		margin-bottom: 0.5rem;
+		color: var(--accent-strong);
+		font-size: 0.72rem;
+		font-weight: 900;
+		letter-spacing: 0.16em;
 	}
 
-	.article-card span {
-		color: rgb(var(--muted));
-		font-size: 0.86rem;
+	.page-head h1 {
+		margin-bottom: 0.55rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: clamp(2.5rem, 6vw, 4.2rem);
 	}
 
-	.article-card h2 {
-		margin: 0.2rem 0 0.35rem;
-		font-size: 1.18rem;
-	}
-
-	.article-card p {
+	.page-head p:last-child {
 		margin: 0;
 		color: rgb(var(--muted));
-		font-size: 0.95rem;
 	}
 
-	.article-card > strong {
-		flex: 0 0 auto;
+	.search-shortcut {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 1rem;
+		gap: 8px;
+		border: 1px solid rgba(var(--line), 0.82);
+		border-radius: 999px;
+		background: rgba(var(--card), 0.75);
+		color: rgb(var(--muted));
+		font-size: 0.84rem;
+		font-weight: 800;
+		white-space: nowrap;
+	}
+
+	.search-shortcut:hover {
+		border-color: rgba(var(--accent), 0.44);
+		background: var(--accent-soft);
 		color: var(--accent-strong);
-		font-size: 0.9rem;
+		transform: translateY(-1px);
 	}
 
-	@media (max-width: 860px) {
-		.docs-shell {
-			grid-template-columns: 1fr;
+	.search-shortcut svg {
+		width: 16px;
+		height: 16px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-width: 1.8;
+	}
+
+	.article-layout {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 1fr);
+		align-items: start;
+		gap: 42px;
+	}
+
+	.article-main {
+		min-width: 0;
+	}
+
+	.list-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		margin-bottom: 10px;
+		gap: 24px;
+	}
+
+	.list-head h2 {
+		margin-bottom: 0.35rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.55rem;
+	}
+
+	.list-head p,
+	.list-head > span {
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.84rem;
+	}
+
+	.list-head > span {
+		padding-bottom: 0.25rem;
+		white-space: nowrap;
+	}
+
+	@media (max-width: 850px) {
+		.articles-shell {
+			width: min(100% - 24px, 1300px);
 		}
 
-		.toc {
-			display: none;
+		.page-head,
+		.list-head {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+
+		.article-layout {
+			grid-template-columns: 1fr;
+			gap: 28px;
 		}
 	}
 </style>

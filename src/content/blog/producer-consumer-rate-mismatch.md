@@ -2,6 +2,7 @@
 title: '生产者-消费者速率不匹配：分析与系统设计'
 description: '从有限缓冲区、队列语义和背压出发，梳理实时预览、完整采集、消费者等待和长期速率不匹配的设计取舍。'
 category: '方法'
+tags: ['生产者消费者', '缓冲区', '系统设计']
 pubDate: 'Jun 29 2026'
 heroImage: '../../assets/blog-placeholder-4.jpg'
 ---

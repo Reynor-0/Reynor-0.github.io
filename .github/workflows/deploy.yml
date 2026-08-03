@@ -13,12 +13,19 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PUBLIC_GISCUS_REPO: ${{ vars.PUBLIC_GISCUS_REPO }}
+      PUBLIC_GISCUS_REPO_ID: ${{ vars.PUBLIC_GISCUS_REPO_ID }}
+      PUBLIC_GISCUS_CATEGORY: ${{ vars.PUBLIC_GISCUS_CATEGORY }}
+      PUBLIC_GISCUS_CATEGORY_ID: ${{ vars.PUBLIC_GISCUS_CATEGORY_ID }}
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v6
 
       - name: Install, build, and upload your site
         uses: withastro/action@v6
+        with:
+          node-version: 22
 
   deploy:
     needs: build

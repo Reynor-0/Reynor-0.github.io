@@ -8,6 +8,21 @@ import { defineConfig, fontProviders } from 'astro/config';
 export default defineConfig({
 	site: 'https://reynor-0.github.io',
 	integrations: [mdx(), sitemap()],
+	redirects: {
+		'/projects': '/blog',
+		'/projects/v4l2-camera-pipeline': '/blog/v4l2-camera-pipeline',
+		'/projects/personal-blog-system': '/blog/personal-blog-system',
+		'/projects/demosaic-algorithm-notes': '/blog/demosaic-algorithm-notes',
+		'/reading': '/blog',
+		'/reading/v4l2-buffer-management': '/blog/v4l2-buffer-management',
+		'/reading/csapp': '/blog/csapp',
+		'/reading/backpressure-streaming': '/blog/backpressure-streaming',
+		'/reading/ahd-demosaicing': '/blog/ahd-demosaicing',
+		'/notes': '/blog',
+		'/notes/realtime-vs-integrity': '/blog/realtime-vs-integrity',
+		'/notes/keep-the-problem-context': '/blog/keep-the-problem-context',
+		'/notes/blog-as-knowledge-base': '/blog/blog-as-knowledge-base',
+	},
 	vite: {
 		ssr: {
 			external: ['picomatch', 'piccolore'],

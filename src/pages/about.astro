@@ -8,20 +8,32 @@ import { SITE_TITLE } from '../consts';
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={`关于 - ${SITE_TITLE}`} description="关于 Reynor's Blog" />
+		<BaseHead title={`关于 - ${SITE_TITLE}`} description="关于 Reynor 与这个个人知识博客。" />
 	</head>
 	<body>
 		<Header />
 		<main class="about">
-			<section class="about-card">
-				<p class="eyebrow">About</p>
-				<h1>关于这个博客</h1>
-				<p>
-					这里用于记录图像处理、Linux 多媒体、系统设计和工程学习中的问题。文章会尽量保留分析过程、约束条件和设计取舍，方便之后复盘。
-				</p>
-				<p>
-					当前博客仍在逐步整理中，优先沉淀可复用的技术笔记，而不是追求一次性完整。
-				</p>
+			<section class="about-intro" aria-labelledby="about-title">
+				<div class="about-copy">
+					<h1 id="about-title">关于我与这片<br />小小的记录地<span>。</span></h1>
+					<div class="about-text">
+						<p>我是 Reynor，一名嵌入式开发者，长期专注于嵌入式系统、Linux 多媒体、摄像头驱动与图像处理。</p>
+						<p>这里记录我在工程实践中遇到的问题、思考的路径与解决的过程，也包括那些绕路、试错与反复验证的时刻。</p>
+						<p>我希望留下的不只是结论，而是问题如何被理解、如何被拆解，以及在复杂约束下，如何一步步找到可行的答案。</p>
+					</div>
+					<nav class="about-links" aria-label="联系与订阅">
+						<a href="https://github.com/Reynor-0" target="_blank" rel="noreferrer">GitHub <span>↗</span></a>
+						<a href="/rss.xml">RSS <span>↗</span></a>
+					</nav>
+				</div>
+
+				<aside class="identity" aria-label="个人简介">
+					<div class="identity-art" aria-hidden="true">
+						<span>R</span>
+					</div>
+					<p>写代码，也写下为什么这样写。</p>
+					<p>让复杂的技术，被时间打磨得更清晰。</p>
+				</aside>
 			</section>
 		</main>
 		<Footer />
@@ -30,29 +42,132 @@ import { SITE_TITLE } from '../consts';
 
 <style>
 	.about {
-		width: min(100% - 32px, 760px);
+		display: grid;
+		min-height: calc(100svh - 160px);
+		place-items: center;
+		padding: clamp(56px, 9vw, 120px) 0;
+		overflow: hidden;
+		background:
+			radial-gradient(circle at 8% 18%, rgba(134, 169, 212, 0.16), transparent 26rem),
+			radial-gradient(circle at 91% 80%, rgba(239, 191, 210, 0.15), transparent 25rem),
+			var(--paper);
 	}
 
-	.about-card {
-		padding: 2rem;
-		border: 1px solid rgba(var(--line), 0.9);
-		border-radius: var(--radius-lg);
-		background: rgba(var(--card), 0.84);
-		box-shadow: var(--shadow);
+	.about-intro {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.68fr);
+		align-items: center;
+		width: min(100% - 48px, 1060px);
+		gap: clamp(48px, 8vw, 100px);
 	}
 
-	.eyebrow {
-		margin-bottom: 0.25rem;
-		color: var(--accent-strong);
-		font-weight: 800;
-		text-transform: uppercase;
+	.about h1 {
+		margin-bottom: 2rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: clamp(2.8rem, 5.6vw, 4.8rem);
+		letter-spacing: -0.055em;
+		line-height: 1.14;
 	}
 
-	h1 {
-		font-size: clamp(2rem, 6vw, 3rem);
+	.about h1 span {
+		color: var(--pink);
 	}
 
-	p {
+	.about-text {
+		display: grid;
+		max-width: 680px;
+		gap: 1rem;
+	}
+
+	.about-text p {
+		margin: 0;
 		color: rgb(var(--muted));
+		font-size: 0.98rem;
+		line-height: 1.95;
+	}
+
+	.about-links {
+		display: flex;
+		margin-top: 2rem;
+		gap: 24px;
+	}
+
+	.about-links a {
+		padding-bottom: 0.2rem;
+		border-bottom: 1px solid rgba(var(--accent), 0.42);
+		color: var(--accent-strong);
+		font-size: 0.82rem;
+		font-weight: 800;
+	}
+
+	.about-links a:hover {
+		border-color: var(--pink);
+		color: #bd6689;
+	}
+
+	.identity {
+		padding: 2rem;
+		border: 1px solid rgba(var(--line), 0.72);
+		border-radius: 24px;
+		background: rgba(var(--card), 0.72);
+		box-shadow: 0 22px 60px rgba(76, 103, 137, 0.09);
+		backdrop-filter: blur(16px);
+	}
+
+	.identity-art {
+		position: relative;
+		display: grid;
+		width: 152px;
+		height: 152px;
+		margin-bottom: 1.7rem;
+		place-items: center;
+		border-radius: 46% 54% 58% 42% / 45% 40% 60% 55%;
+		background:
+			radial-gradient(circle at 68% 28%, rgba(247, 204, 221, 0.9), transparent 27%),
+			radial-gradient(circle at 34% 72%, rgba(163, 195, 229, 0.78), transparent 44%),
+			linear-gradient(145deg, #eaf4fd, #c9dcef 54%, #f8e5ee);
+		box-shadow:
+			18px 16px 0 rgba(239, 191, 210, 0.16),
+			-13px 12px 0 rgba(134, 169, 212, 0.1);
+	}
+
+	.identity-art span {
+		color: rgba(255, 255, 255, 0.94);
+		font-family: Georgia, "Times New Roman", serif;
+		font-size: 3.9rem;
+		text-shadow: 0 3px 18px rgba(86, 120, 158, 0.24);
+	}
+
+	.identity > p {
+		margin: 0;
+		color: var(--heading-soft);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 0.94rem;
+		line-height: 1.8;
+	}
+
+	.identity > p + p {
+		color: rgb(var(--muted));
+	}
+
+	@media (max-width: 760px) {
+		.about {
+			padding: 58px 0 72px;
+		}
+
+		.about-intro {
+			grid-template-columns: 1fr;
+			width: min(100% - 28px, 1060px);
+			gap: 42px;
+		}
+
+		.about h1 {
+			font-size: clamp(2.55rem, 12vw, 4rem);
+		}
+
+		.identity {
+			padding: 1.6rem;
+		}
 	}
 </style>

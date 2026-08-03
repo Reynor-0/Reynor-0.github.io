@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { CATEGORY_ORDER } from '../lib/blog';
 
 type Props = {
 	posts: CollectionEntry<'blog'>[];
@@ -8,8 +9,7 @@ type Props = {
 };
 
 const { posts, currentId, overviewActive = false } = Astro.props;
-const categoryOrder = ['驱动', '协议', '操作系统', '架构', '方法'] as const;
-const groups = categoryOrder
+const groups = CATEGORY_ORDER
 	.map((category) => ({
 		category,
 		posts: posts.filter((post) => post.data.category === category),
@@ -17,11 +17,18 @@ const groups = categoryOrder
 	.filter((group) => group.posts.length > 0);
 ---
 
-<aside class="blog-sidebar" aria-label="技术文章分类导航">
-	<a class:list={['overview-link', { active: overviewActive }]} href="/blog">
-		<span>文章导览</span>
-		<small>{posts.length}</small>
-	</a>
+<aside class="blog-sidebar" aria-label="文章分类导航" data-blog-sidebar>
+	<div class="sidebar-head">
+		<a class:list={['overview-link', { active: overviewActive }]} href="/blog">
+			<span>文章导览</span>
+			<small>{posts.length}</small>
+		</a>
+		<button type="button" data-collapse-all aria-label="收拢全部文章分类" title="收拢全部分类">
+			<svg viewBox="0 0 20 20" aria-hidden="true">
+				<path d="m5.5 8 4.5-4 4.5 4M5.5 12l4.5 4 4.5-4" />
+			</svg>
+		</button>
+	</div>
 
 	<nav aria-label="按主题浏览文章">
 		{
@@ -56,6 +63,25 @@ const groups = categoryOrder
 	</nav>
 </aside>
 
+<script>
+	const bindSidebarCollapse = () => {
+		document.querySelectorAll('[data-blog-sidebar]').forEach((sidebar) => {
+			const button = sidebar.querySelector('[data-collapse-all]');
+			if (!(button instanceof HTMLButtonElement) || button.dataset.bound === 'true') return;
+			button.dataset.bound = 'true';
+			button.addEventListener('click', () => {
+				sidebar.querySelectorAll('details[open]').forEach((details) => {
+					if (details instanceof HTMLDetailsElement) details.open = false;
+				});
+				button.blur();
+			});
+		});
+	};
+
+	document.addEventListener('astro:page-load', bindSidebarCollapse);
+	bindSidebarCollapse();
+</script>
+
 <style>
 	.blog-sidebar {
 		position: sticky;
@@ -73,13 +99,22 @@ const groups = categoryOrder
 		scrollbar-color: rgba(134, 169, 212, 0.36) transparent;
 	}
 
+	.sidebar-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8px;
+		gap: 6px;
+	}
+
 	.overview-link {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		min-width: 0;
 		min-height: 42px;
-		margin-bottom: 8px;
 		padding: 0 0.78rem;
+		flex: 1;
 		border-radius: 10px;
 		color: rgb(var(--muted));
 		font-size: 0.91rem;
@@ -90,6 +125,37 @@ const groups = categoryOrder
 	.overview-link.active {
 		background: linear-gradient(135deg, var(--accent-soft), rgba(253, 240, 245, 0.72));
 		color: var(--accent-strong);
+	}
+
+	.sidebar-head button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		border: 1px solid rgba(var(--line), 0.76);
+		border-radius: 9px;
+		background: rgba(var(--card), 0.7);
+		color: rgb(var(--muted));
+		cursor: pointer;
+		font: inherit;
+	}
+
+	.sidebar-head button:hover {
+		border-color: rgba(var(--accent), 0.42);
+		background: var(--accent-soft);
+		color: var(--accent-strong);
+	}
+
+	.sidebar-head button svg {
+		width: 14px;
+		height: 14px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.6;
 	}
 
 	.overview-link small,

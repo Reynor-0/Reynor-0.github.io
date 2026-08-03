@@ -10,7 +10,8 @@ const blog = defineCollection({
 		z.object({
 			title: z.string(),
 			description: z.string(),
-			category: z.enum(['驱动', '协议', '操作系统', '架构', '方法']),
+			category: z.enum(['驱动', '协议', '操作系统', '架构', '方法', '项目']),
+			tags: z.array(z.string()).min(1),
 			// Transform string to Date object
 			pubDate: z.coerce.date(),
 			updatedDate: z.coerce.date().optional(),

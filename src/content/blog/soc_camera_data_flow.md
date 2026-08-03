@@ -2,6 +2,7 @@
 title: '现代 SoC 如何采集一帧图像：从 MIPI CSI-2 到 V4L2 Buffer'
 description: '面向初学者梳理摄像头采集链路：Sensor 如何产生 RAW 图像，MIPI CSI-2 和 D-PHY 如何传输数据，SoC 如何通过 ISP、DMA 和 VB2 将图像交给用户程序。'
 category: '协议'
+tags: ['MIPI CSI-2', 'V4L2', 'Camera']
 pubDate: 'Jul 21 2026'
 heroImage: '../../assets/blog-placeholder-5.jpg'
 ---

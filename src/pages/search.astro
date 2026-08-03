@@ -1,0 +1,307 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleRow from '../components/ArticleRow.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`搜索 - ${SITE_TITLE}`} description="搜索博客中的文章标题、摘要、分类与标签。" />
+	</head>
+	<body>
+		<Header />
+		<main class="search-page">
+			<header class="page-head">
+				<p>SEARCH THE NOTES</p>
+				<h1>搜索文章</h1>
+				<p>在标题、摘要、主题和标签中查找。搜索在你的浏览器本地完成，不需要服务器。</p>
+			</header>
+
+			<section class="search-box" aria-labelledby="search-label">
+				<label id="search-label" for="article-search">输入关键词</label>
+				<div>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<circle cx="10.5" cy="10.5" r="6.2" />
+						<path d="m15.2 15.2 4.6 4.6" />
+					</svg>
+					<input
+						id="article-search"
+						type="search"
+						placeholder="例如：V4L2、PHY、图像处理……"
+						autocomplete="off"
+						spellcheck="false"
+						data-search-input
+					/>
+					<button type="button" data-search-clear hidden>清空</button>
+				</div>
+				<p>可以组合输入多个词，例如 <code>V4L2 buffer</code>。</p>
+			</section>
+
+			<section class="results" aria-live="polite" aria-labelledby="result-title">
+				<div class="result-head">
+					<h2 id="result-title">全部文章</h2>
+					<span data-result-count>{posts.length} 篇</span>
+				</div>
+				<div data-search-results>
+					{
+						posts.map((post) => (
+							<div
+								data-search-item
+								data-search={[
+									post.data.title,
+									post.data.description,
+									post.data.category,
+									...post.data.tags,
+								].join(' ').toLocaleLowerCase('zh-CN')}
+							>
+								<ArticleRow post={post} />
+							</div>
+						))
+					}
+				</div>
+				<div class="empty" data-search-empty hidden>
+					<span aria-hidden="true">⌕</span>
+					<h2>没有找到匹配文章</h2>
+					<p>换一个更短的关键词，或从标签页继续浏览。</p>
+					<a href="/tags">查看全部标签</a>
+				</div>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<script>
+	const normalize = (value) => value.trim().toLocaleLowerCase('zh-CN').split(/\s+/).filter(Boolean);
+
+	const bindSearch = () => {
+		const input = document.querySelector('[data-search-input]');
+		const clear = document.querySelector('[data-search-clear]');
+		const count = document.querySelector('[data-result-count]');
+		const empty = document.querySelector('[data-search-empty]');
+		const resultTitle = document.querySelector('#result-title');
+		const items = Array.from(document.querySelectorAll('[data-search-item]'));
+
+		if (!(input instanceof HTMLInputElement) || !(clear instanceof HTMLButtonElement)) return;
+		if (input.dataset.bound === 'true') return;
+		input.dataset.bound = 'true';
+
+		const update = (syncUrl = true) => {
+			const terms = normalize(input.value);
+			let visible = 0;
+
+			items.forEach((item) => {
+				const haystack = item.getAttribute('data-search') ?? '';
+				const matched = terms.every((term) => haystack.includes(term));
+				item.toggleAttribute('hidden', !matched);
+				if (matched) visible += 1;
+			});
+
+			clear.hidden = input.value.length === 0;
+			empty?.toggleAttribute('hidden', visible !== 0);
+			if (count) count.textContent = `${visible} 篇`;
+			if (resultTitle) resultTitle.textContent = terms.length ? `“${input.value.trim()}”的搜索结果` : '全部文章';
+
+			if (syncUrl) {
+				const url = new URL(window.location.href);
+				if (input.value.trim()) url.searchParams.set('q', input.value.trim());
+				else url.searchParams.delete('q');
+				history.replaceState({}, '', url);
+			}
+		};
+
+		const initialQuery = new URL(window.location.href).searchParams.get('q');
+		if (initialQuery) input.value = initialQuery;
+		input.addEventListener('input', () => update());
+		clear.addEventListener('click', () => {
+			input.value = '';
+			update();
+			input.focus();
+		});
+		update(false);
+	};
+
+	document.addEventListener('astro:page-load', bindSearch);
+	bindSearch();
+</script>
+
+<style>
+	.search-page {
+		width: min(100% - 40px, 980px);
+	}
+
+	.page-head {
+		max-width: 760px;
+		margin-bottom: 36px;
+	}
+
+	.page-head > p:first-child {
+		margin-bottom: 0.55rem;
+		color: var(--accent-strong);
+		font-size: 0.72rem;
+		font-weight: 900;
+		letter-spacing: 0.17em;
+	}
+
+	.page-head h1 {
+		margin-bottom: 0.55rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: clamp(2.8rem, 7vw, 4.8rem);
+	}
+
+	.page-head > p:last-child {
+		color: rgb(var(--muted));
+	}
+
+	.search-box {
+		margin-bottom: 50px;
+		padding: 1.5rem;
+		border: 1px solid rgba(var(--line), 0.76);
+		border-radius: 18px;
+		background:
+			radial-gradient(circle at 100% 0, rgba(239, 191, 210, 0.14), transparent 15rem),
+			rgba(var(--card), 0.78);
+		box-shadow: 0 18px 48px rgba(76, 103, 137, 0.07);
+	}
+
+	.search-box label {
+		display: block;
+		margin-bottom: 0.65rem;
+		color: var(--heading-soft);
+		font-size: 0.8rem;
+		font-weight: 900;
+	}
+
+	.search-box > div {
+		display: grid;
+		grid-template-columns: 24px minmax(0, 1fr) auto;
+		align-items: center;
+		min-height: 58px;
+		padding: 0 0.9rem;
+		gap: 10px;
+		border: 1px solid rgba(var(--accent), 0.3);
+		border-radius: 13px;
+		background: rgba(var(--card), 0.86);
+	}
+
+	.search-box svg {
+		width: 21px;
+		height: 21px;
+		fill: none;
+		stroke: var(--accent-strong);
+		stroke-linecap: round;
+		stroke-width: 1.7;
+	}
+
+	.search-box input {
+		width: 100%;
+		min-width: 0;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: rgb(var(--ink));
+		font: inherit;
+		font-size: 1rem;
+	}
+
+	.search-box input::placeholder {
+		color: rgba(var(--muted), 0.68);
+	}
+
+	.search-box button {
+		padding: 0.36rem 0.68rem;
+		border: 0;
+		border-radius: 8px;
+		background: var(--accent-soft);
+		color: var(--accent-strong);
+		cursor: pointer;
+		font: inherit;
+		font-size: 0.75rem;
+		font-weight: 800;
+	}
+
+	.search-box > p {
+		margin: 0.7rem 0 0;
+		color: rgb(var(--muted));
+		font-size: 0.78rem;
+	}
+
+	.search-box code {
+		font-size: 0.86em;
+	}
+
+	.result-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		margin-bottom: 12px;
+		gap: 20px;
+	}
+
+	.result-head h2 {
+		margin: 0;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.45rem;
+	}
+
+	.result-head span {
+		color: rgb(var(--muted));
+		font-size: 0.8rem;
+	}
+
+	[data-search-item][hidden] {
+		display: none;
+	}
+
+	.empty {
+		padding: 64px 24px;
+		border-top: 1px solid rgba(var(--line), 0.84);
+		text-align: center;
+	}
+
+	.empty[hidden] {
+		display: none;
+	}
+
+	.empty > span {
+		display: block;
+		margin-bottom: 0.7rem;
+		color: var(--accent);
+		font-size: 2.7rem;
+	}
+
+	.empty h2 {
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.3rem;
+	}
+
+	.empty p {
+		color: rgb(var(--muted));
+		font-size: 0.88rem;
+	}
+
+	.empty a {
+		font-size: 0.84rem;
+		font-weight: 800;
+	}
+
+	@media (max-width: 620px) {
+		.search-page {
+			width: min(100% - 24px, 980px);
+		}
+
+		.search-box {
+			padding: 1.1rem;
+		}
+	}
+</style>

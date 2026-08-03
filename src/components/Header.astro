@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import HeaderLink from './HeaderLink.astro';
 
 interface Props {
@@ -6,21 +7,31 @@ interface Props {
 }
 
 const { overlay = false } = Astro.props;
+const searchPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 
 <header class:list={['site-header', { overlay }]}>
 	<nav class="nav-shell" aria-label="主导航">
-		<a class="brand" href="/" aria-label="Reynor's Blog 首页">
-			<span class="brand-mark" aria-hidden="true">R</span>
-			<strong>Reynor's Blog</strong>
+		<a class="brand" href="/" aria-label="Reynor 首页">
+			<strong>Reynor</strong>
 		</a>
 		<div class="nav-actions">
 			<div class="nav-links">
+				<button
+					class="search-trigger"
+					type="button"
+					data-search-trigger
+					aria-label="搜索文章"
+					aria-expanded="false"
+					aria-controls="nav-search-popover"
+				>
+					搜索
+				</button>
 				<HeaderLink href="/">主页</HeaderLink>
-				<HeaderLink href="/blog">技术</HeaderLink>
-				<HeaderLink href="/projects">项目</HeaderLink>
-				<HeaderLink href="/reading">阅读</HeaderLink>
-				<HeaderLink href="/notes">随笔</HeaderLink>
+				<HeaderLink href="/blog">文章</HeaderLink>
+				<HeaderLink href="/tags">标签</HeaderLink>
 				<HeaderLink href="/about">关于</HeaderLink>
 			</div>
 			<button class="theme-toggle" type="button" data-theme-toggle aria-label="切换到夜间模式" title="切换到夜间模式">
@@ -32,6 +43,52 @@ const { overlay = false } = Astro.props;
 					<path d="M20 15.2A8.4 8.4 0 0 1 8.8 4 8.5 8.5 0 1 0 20 15.2Z" />
 				</svg>
 			</button>
+
+			<section
+				class="search-popover"
+				id="nav-search-popover"
+				data-search-popover
+				aria-label="即时搜索"
+				hidden
+			>
+				<label class="search-field">
+					<span class="sr-only">搜索标题、描述或标签</span>
+					<svg viewBox="0 0 20 20" aria-hidden="true">
+						<circle cx="8.5" cy="8.5" r="5.2" />
+						<path d="m12.4 12.4 4 4" />
+					</svg>
+					<input
+						type="search"
+						data-search-input
+						placeholder="搜索文章、标签或关键词…"
+						autocomplete="off"
+						spellcheck="false"
+					/>
+				</label>
+				<p class="search-status" data-search-status aria-live="polite">输入关键词，即时查找全部文章。</p>
+				<div class="search-results" data-search-results>
+					{
+						searchPosts.map((post) => (
+							<a
+								href={`/blog/${post.id}/`}
+								data-search-item
+								data-search-text={[
+									post.data.title,
+									post.data.description,
+									post.data.category,
+									...post.data.tags,
+								].join(' ').toLocaleLowerCase('zh-CN')}
+								hidden
+							>
+								<strong>{post.data.title}</strong>
+								<span>
+									{post.data.tags.slice(0, 3).map((tag) => <small>#{tag}</small>)}
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</section>
 		</div>
 	</nav>
 </header>
@@ -54,12 +111,94 @@ const { overlay = false } = Astro.props;
 				document.documentElement.style.colorScheme = nextTheme;
 				localStorage.setItem('reynor-theme', nextTheme);
 				syncThemeControls();
+				document.dispatchEvent(new CustomEvent('reynor:theme-change', { detail: { theme: nextTheme } }));
 			});
 		});
 	};
 
-	document.addEventListener('astro:page-load', syncThemeControls);
-	syncThemeControls();
+	const bindNavigationSearch = () => {
+		document.querySelectorAll('.nav-actions').forEach((actions) => {
+			if (!(actions instanceof HTMLElement) || actions.dataset.searchBound === 'true') return;
+
+			const trigger = actions.querySelector('[data-search-trigger]');
+			const popover = actions.querySelector('[data-search-popover]');
+			const input = actions.querySelector('[data-search-input]');
+			const status = actions.querySelector('[data-search-status]');
+			const items = Array.from(actions.querySelectorAll('[data-search-item]'));
+			if (
+				!(trigger instanceof HTMLButtonElement) ||
+				!(popover instanceof HTMLElement) ||
+				!(input instanceof HTMLInputElement) ||
+				!(status instanceof HTMLElement)
+			) return;
+
+			actions.dataset.searchBound = 'true';
+
+			const close = () => {
+				popover.hidden = true;
+				trigger.setAttribute('aria-expanded', 'false');
+			};
+
+			const open = () => {
+				popover.hidden = false;
+				trigger.setAttribute('aria-expanded', 'true');
+				window.requestAnimationFrame(() => input.focus());
+			};
+
+			const updateResults = () => {
+				const terms = input.value
+					.trim()
+					.toLocaleLowerCase('zh-CN')
+					.split(/\s+/)
+					.filter(Boolean);
+				let matches = 0;
+
+				items.forEach((item) => {
+					if (!(item instanceof HTMLAnchorElement)) return;
+					const haystack = item.dataset.searchText ?? '';
+					const matched = terms.length > 0 && terms.every((term) => haystack.includes(term));
+					const visible = matched && matches < 6;
+					item.hidden = !visible;
+					if (visible) matches += 1;
+				});
+
+				if (terms.length === 0) {
+					status.textContent = '输入关键词，即时查找全部文章。';
+				} else if (matches === 0) {
+					status.textContent = '没有找到匹配文章，换个关键词试试。';
+				} else {
+					status.textContent = `找到 ${matches} 篇相关结果`;
+				}
+			};
+
+			trigger.addEventListener('click', () => {
+				if (popover.hidden) open();
+				else close();
+			});
+			input.addEventListener('input', updateResults);
+			input.addEventListener('keydown', (event) => {
+				if (event.key !== 'Enter') return;
+				const firstResult = items.find((item) => item instanceof HTMLAnchorElement && !item.hidden);
+				if (firstResult instanceof HTMLAnchorElement) firstResult.click();
+			});
+			document.addEventListener('pointerdown', (event) => {
+				if (event.target instanceof Node && !actions.contains(event.target)) close();
+			});
+			document.addEventListener('keydown', (event) => {
+				if (event.key !== 'Escape' || popover.hidden) return;
+				close();
+				trigger.focus();
+			});
+		});
+	};
+
+	const initializeHeader = () => {
+		syncThemeControls();
+		bindNavigationSearch();
+	};
+
+	document.addEventListener('astro:page-load', initializeHeader);
+	initializeHeader();
 </script>
 
 <style>
@@ -103,7 +242,7 @@ const { overlay = false } = Astro.props;
 	.brand {
 		display: inline-flex;
 		align-items: center;
-		gap: 10px;
+		min-height: 40px;
 		flex: 0 0 auto;
 		color: rgb(var(--ink));
 	}
@@ -112,24 +251,19 @@ const { overlay = false } = Astro.props;
 		color: var(--accent-strong);
 	}
 
-	.brand-mark {
-		display: inline-grid;
-		width: 30px;
-		height: 30px;
-		place-items: center;
-		border-radius: 50%;
-		background: linear-gradient(145deg, rgba(134, 169, 212, 0.92), rgba(239, 191, 210, 0.88));
-		box-shadow: 0 7px 18px rgba(95, 130, 178, 0.18);
-		color: #fff;
-		font-family: Georgia, "Times New Roman", serif;
-		font-size: 0.98rem;
-		font-weight: 700;
-	}
-
 	.brand strong {
 		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
-		font-size: 1.02rem;
-		letter-spacing: -0.01em;
+		font-size: 1.08rem;
+		letter-spacing: 0.01em;
+	}
+
+	.nav-actions {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		min-width: 0;
+		gap: 8px;
 	}
 
 	.nav-links {
@@ -139,12 +273,25 @@ const { overlay = false } = Astro.props;
 		gap: 2px;
 	}
 
-	.nav-actions {
-		display: flex;
+	.search-trigger {
+		display: inline-flex;
 		align-items: center;
-		justify-content: flex-end;
-		min-width: 0;
-		gap: 8px;
+		min-height: 40px;
+		padding: 0.45rem 0.68rem;
+		border: 0;
+		border-radius: 8px;
+		background: transparent;
+		color: rgb(var(--muted));
+		cursor: pointer;
+		font: inherit;
+		font-size: 0.9rem;
+		font-weight: 700;
+	}
+
+	.search-trigger:hover,
+	.search-trigger[aria-expanded="true"] {
+		background: rgba(var(--card), 0.72);
+		color: rgb(var(--ink));
 	}
 
 	.theme-toggle {
@@ -192,6 +339,124 @@ const { overlay = false } = Astro.props;
 		display: block;
 	}
 
+	.search-popover {
+		position: absolute;
+		top: calc(100% + 14px);
+		right: 46px;
+		width: min(380px, calc(100vw - 28px));
+		padding: 12px;
+		border: 1px solid rgba(var(--line), 0.78);
+		border-radius: 16px;
+		background: rgba(var(--card), 0.94);
+		box-shadow: 0 22px 70px rgba(58, 78, 110, 0.18);
+		backdrop-filter: blur(20px) saturate(140%);
+	}
+
+	.search-popover[hidden] {
+		display: none;
+	}
+
+	.search-field {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 0.8rem;
+		gap: 9px;
+		border: 1px solid rgba(var(--accent), 0.42);
+		border-radius: 11px;
+		background: rgba(var(--paper), 0.82);
+	}
+
+	.search-field:focus-within {
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px rgba(var(--accent), 0.13);
+	}
+
+	.search-field svg {
+		width: 17px;
+		height: 17px;
+		flex: 0 0 auto;
+		fill: none;
+		stroke: var(--accent-strong);
+		stroke-linecap: round;
+		stroke-width: 1.8;
+	}
+
+	.search-field input {
+		width: 100%;
+		padding: 0;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: rgb(var(--ink));
+		font: inherit;
+		font-size: 0.86rem;
+	}
+
+	.search-field input::placeholder {
+		color: rgb(var(--muted));
+	}
+
+	.search-status {
+		margin: 0;
+		padding: 0.68rem 0.3rem 0.5rem;
+		color: rgb(var(--muted));
+		font-size: 0.73rem;
+	}
+
+	.search-results {
+		display: grid;
+		max-height: min(430px, 58vh);
+		overflow-y: auto;
+	}
+
+	.search-results a {
+		display: grid;
+		padding: 0.76rem 0.7rem;
+		gap: 0.4rem;
+		border-top: 1px solid rgba(var(--line), 0.58);
+		border-radius: 9px;
+		color: rgb(var(--ink));
+	}
+
+	.search-results a[hidden] {
+		display: none;
+	}
+
+	.search-results a:hover,
+	.search-results a:focus-visible {
+		background: linear-gradient(135deg, var(--accent-soft), var(--pink-soft));
+	}
+
+	.search-results strong {
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 0.88rem;
+		line-height: 1.5;
+	}
+
+	.search-results a > span {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+
+	.search-results small {
+		color: rgb(var(--muted));
+		font-size: 0.67rem;
+		font-weight: 700;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
 	@media (max-width: 720px) {
 		.site-header {
 			padding: 8px 0;
@@ -222,6 +487,11 @@ const { overlay = false } = Astro.props;
 
 		.nav-links::-webkit-scrollbar {
 			display: none;
+		}
+
+		.search-popover {
+			top: calc(100% + 8px);
+			right: 0;
 		}
 	}
 </style>

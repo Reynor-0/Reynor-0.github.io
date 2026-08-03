@@ -1,0 +1,252 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleRow from '../../components/ArticleRow.astro';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { tagSlug } from '../../lib/blog';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const tagMap = new Map<string, typeof posts>();
+posts.forEach((post) => {
+	post.data.tags.forEach((tag) => tagMap.set(tag, [...(tagMap.get(tag) ?? []), post]));
+});
+const tags = [...tagMap.entries()].sort(
+	(a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], 'zh-CN'),
+);
+const featuredTags = tags.slice(0, 6);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`标签 - ${SITE_TITLE}`} description="按标签索引博客中的全部文章。" />
+	</head>
+	<body>
+		<Header />
+		<main class="tags-page">
+			<header class="page-head">
+				<p class="eyebrow">ARTICLE INDEX</p>
+				<h1>标签</h1>
+				<p>{tags.length} 个标签，把散落在不同主题里的知识重新连接起来。</p>
+			</header>
+
+			<section class="tag-cloud" aria-labelledby="all-tags-title">
+				<div class="section-title">
+					<h2 id="all-tags-title">全部标签</h2>
+					<span>{posts.length} 篇文章</span>
+				</div>
+				<div>
+					{
+						tags.map(([tag, tagPosts], index) => (
+							<a
+								href={`/tags/${tagSlug(tag)}/`}
+								style={`--tag-scale: ${Math.min(1.22, 0.82 + tagPosts.length * 0.08)}; --tag-delay: ${index * 18}ms`}
+							>
+								<span>{tag}</span>
+								<small>{tagPosts.length}</small>
+							</a>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="tag-groups" aria-labelledby="featured-tags-title">
+				<div class="section-title">
+					<h2 id="featured-tags-title">常用标签</h2>
+					<p>每组先展示最近三篇，进入标签页可以查看全部。</p>
+				</div>
+				{
+					featuredTags.map(([tag, tagPosts]) => (
+						<section class="tag-group">
+							<header>
+								<div><span>#</span><h3>{tag}</h3><small>{tagPosts.length}</small></div>
+								<a href={`/tags/${tagSlug(tag)}/`}>查看全部 →</a>
+							</header>
+							<div>
+								{tagPosts.slice(0, 3).map((post) => <ArticleRow post={post} compact />)}
+							</div>
+						</section>
+					))
+				}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.tags-page {
+		width: min(100% - 40px, 1120px);
+	}
+
+	.page-head {
+		max-width: 760px;
+		margin-bottom: 44px;
+	}
+
+	.eyebrow {
+		margin-bottom: 0.55rem;
+		color: var(--accent-strong);
+		font-size: 0.72rem;
+		font-weight: 900;
+		letter-spacing: 0.17em;
+	}
+
+	.page-head h1 {
+		margin-bottom: 0.55rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: clamp(2.8rem, 7vw, 4.8rem);
+	}
+
+	.page-head > p:last-child {
+		color: rgb(var(--muted));
+	}
+
+	.tag-cloud {
+		margin-bottom: 78px;
+		padding: 2rem 2.2rem 2.3rem;
+		border: 1px solid rgba(var(--line), 0.76);
+		border-radius: 22px;
+		background:
+			radial-gradient(circle at 0 100%, rgba(134, 169, 212, 0.16), transparent 22rem),
+			radial-gradient(circle at 100% 0, rgba(239, 191, 210, 0.18), transparent 20rem),
+			rgba(var(--card), 0.76);
+		box-shadow: 0 18px 52px rgba(76, 103, 137, 0.07);
+	}
+
+	.section-title,
+	.tag-group > header,
+	.tag-group > header > div {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.section-title {
+		margin-bottom: 1.4rem;
+	}
+
+	.section-title h2 {
+		margin: 0;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.45rem;
+	}
+
+	.section-title > span,
+	.section-title > p {
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.8rem;
+	}
+
+	.tag-cloud > div:last-child {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	.tag-cloud a {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.42rem 0.78rem;
+		gap: 6px;
+		border: 1px solid rgba(var(--line), 0.72);
+		border-radius: 999px;
+		background: rgba(var(--card), 0.72);
+		color: var(--heading-soft);
+		font-size: calc(0.85rem * var(--tag-scale));
+		animation: tag-enter 420ms ease-out both;
+		animation-delay: var(--tag-delay);
+	}
+
+	.tag-cloud a:hover {
+		border-color: rgba(var(--pink), 0.48);
+		background: var(--pink-soft);
+		color: #bd6689;
+		transform: translateY(-2px);
+	}
+
+	.tag-cloud small {
+		color: var(--accent-strong);
+		font-size: 0.66em;
+		font-weight: 900;
+	}
+
+	.tag-groups > .section-title {
+		align-items: flex-end;
+		margin-bottom: 20px;
+		padding-bottom: 18px;
+		border-bottom: 1px solid rgba(var(--line), 0.82);
+	}
+
+	.tag-group {
+		margin-bottom: 48px;
+	}
+
+	.tag-group > header {
+		margin-bottom: 4px;
+	}
+
+	.tag-group > header > div {
+		justify-content: flex-start;
+		gap: 8px;
+	}
+
+	.tag-group h3 {
+		margin: 0;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.25rem;
+	}
+
+	.tag-group header span {
+		color: var(--pink);
+		font-weight: 900;
+	}
+
+	.tag-group header small {
+		display: grid;
+		min-width: 24px;
+		height: 24px;
+		place-items: center;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent-strong);
+		font-size: 0.7rem;
+	}
+
+	.tag-group header > a {
+		font-size: 0.78rem;
+		font-weight: 800;
+	}
+
+	@keyframes tag-enter {
+		from { opacity: 0; transform: translateY(5px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	@media (max-width: 620px) {
+		.tags-page {
+			width: min(100% - 24px, 1120px);
+		}
+
+		.tag-cloud {
+			padding: 1.5rem 1.2rem 1.7rem;
+		}
+
+		.section-title {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 6px;
+		}
+	}
+</style>

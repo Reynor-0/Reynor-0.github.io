@@ -1,0 +1,161 @@
+---
+const repo = import.meta.env.PUBLIC_GISCUS_REPO || 'Reynor-0/Reynor-0.github.io';
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY || 'Announcements';
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
+const configured = Boolean(repoId && categoryId);
+---
+
+<section class="comments" aria-labelledby="comments-title">
+	<div class="comments-head">
+		<div>
+			<p>DISCUSSION</p>
+			<h2 id="comments-title">评论与交流</h2>
+		</div>
+		<span>由 Giscus 与 GitHub Discussions 提供</span>
+	</div>
+
+	{
+		configured ? (
+			<div
+				class="giscus-mount"
+				data-giscus-mount
+				data-repo={repo}
+				data-repo-id={repoId}
+				data-category={category}
+				data-category-id={categoryId}
+			/>
+		) : (
+			<aside class="giscus-setup">
+				<strong>评论组件已经接入，等待完成仓库配置。</strong>
+				<p>
+					启用 GitHub Discussions 并取得 Giscus 的 Repo ID、Category ID 后，将它们写入环境变量即可显示评论。
+				</p>
+				<a href="https://giscus.app/zh-CN" target="_blank" rel="noreferrer">前往 Giscus 配置 <span>↗</span></a>
+			</aside>
+		)
+	}
+</section>
+
+<script>
+	const getGiscusTheme = () =>
+		document.documentElement.dataset.theme === 'dark' ? 'dark_dimmed' : 'light';
+
+	const syncGiscusTheme = () => {
+		document.querySelectorAll('iframe.giscus-frame').forEach((iframe) => {
+			if (!(iframe instanceof HTMLIFrameElement)) return;
+			iframe.contentWindow?.postMessage(
+				{ giscus: { setConfig: { theme: getGiscusTheme() } } },
+				'https://giscus.app',
+			);
+		});
+	};
+
+	const mountGiscus = () => {
+		document.querySelectorAll('[data-giscus-mount]').forEach((mount) => {
+			if (!(mount instanceof HTMLElement) || mount.dataset.loaded === 'true') return;
+
+			const { repo, repoId, category, categoryId } = mount.dataset;
+			if (!repo || !repoId || !category || !categoryId) return;
+
+			const script = document.createElement('script');
+			script.src = 'https://giscus.app/client.js';
+			script.async = true;
+			script.crossOrigin = 'anonymous';
+			script.dataset.repo = repo;
+			script.dataset.repoId = repoId;
+			script.dataset.category = category;
+			script.dataset.categoryId = categoryId;
+			script.dataset.mapping = 'pathname';
+			script.dataset.strict = '0';
+			script.dataset.reactionsEnabled = '1';
+			script.dataset.emitMetadata = '0';
+			script.dataset.inputPosition = 'bottom';
+			script.dataset.theme = getGiscusTheme();
+			script.dataset.lang = 'zh-CN';
+			script.dataset.loading = 'lazy';
+			mount.dataset.loaded = 'true';
+			mount.append(script);
+		});
+
+		if (document.documentElement.dataset.giscusThemeBound !== 'true') {
+			document.documentElement.dataset.giscusThemeBound = 'true';
+			document.addEventListener('reynor:theme-change', syncGiscusTheme);
+		}
+	};
+
+	document.addEventListener('astro:page-load', mountGiscus);
+	mountGiscus();
+</script>
+
+<style>
+	.comments {
+		margin-top: 3.5rem;
+		padding-top: 2rem;
+		border-top: 1px solid rgba(var(--line), 0.88);
+	}
+
+	.comments-head {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		margin-bottom: 1.4rem;
+		gap: 20px;
+	}
+
+	.comments-head p {
+		margin: 0 0 0.3rem;
+		color: var(--accent-strong);
+		font-size: 0.68rem;
+		font-weight: 900;
+		letter-spacing: 0.16em;
+	}
+
+	.comments-head h2 {
+		margin: 0;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.5rem;
+	}
+
+	.comments-head > span {
+		color: rgb(var(--muted));
+		font-size: 0.72rem;
+	}
+
+	.giscus-mount {
+		min-height: 180px;
+	}
+
+	.giscus-setup {
+		padding: 1.35rem 1.5rem;
+		border: 1px dashed rgba(var(--accent), 0.46);
+		border-radius: 14px;
+		background: linear-gradient(135deg, rgba(var(--soft), 0.78), rgba(var(--card), 0.84));
+	}
+
+	.giscus-setup strong {
+		color: var(--heading-soft);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+	}
+
+	.giscus-setup p {
+		margin: 0.45rem 0 0.8rem;
+		color: rgb(var(--muted));
+		font-size: 0.84rem;
+	}
+
+	.giscus-setup a {
+		color: var(--accent-strong);
+		font-size: 0.78rem;
+		font-weight: 800;
+	}
+
+	@media (max-width: 620px) {
+		.comments-head {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 6px;
+		}
+	}
+</style>

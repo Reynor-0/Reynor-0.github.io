@@ -1,0 +1,120 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ArticleRow from '../../components/ArticleRow.astro';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SITE_TITLE } from '../../consts';
+import { tagSlug } from '../../lib/blog';
+
+type Props = {
+	tag: string;
+	posts: CollectionEntry<'blog'>[];
+};
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	const tagMap = new Map<string, CollectionEntry<'blog'>[]>();
+	posts.forEach((post) => {
+		post.data.tags.forEach((tag) => tagMap.set(tag, [...(tagMap.get(tag) ?? []), post]));
+	});
+
+	return [...tagMap.entries()].map(([tag, tagPosts]) => ({
+		params: { tag: tagSlug(tag) },
+		props: {
+			tag,
+			posts: tagPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+		},
+	}));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`#${tag} - ${SITE_TITLE}`} description={`标签“${tag}”下的全部文章。`} />
+	</head>
+	<body>
+		<Header />
+		<main class="tag-page">
+			<nav class="crumb" aria-label="面包屑导航">
+				<a href="/">主页</a><span>〉</span><a href="/tags">标签</a><span>〉</span><strong>{tag}</strong>
+			</nav>
+			<header>
+				<p>TAG ARCHIVE</p>
+				<h1><span>#</span>{tag}</h1>
+				<p>共有 {posts.length} 篇文章。标签把同一问题的不同侧面连接在一起。</p>
+			</header>
+			<section aria-label={`${tag} 标签文章`}>
+				{posts.map((post) => <ArticleRow post={post} />)}
+			</section>
+			<a class="back" href="/tags">← 返回全部标签</a>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.tag-page {
+		width: min(100% - 40px, 920px);
+	}
+
+	.crumb {
+		display: flex;
+		flex-wrap: wrap;
+		margin-bottom: 34px;
+		gap: 0.35rem;
+		color: rgb(var(--muted));
+		font-size: 0.85rem;
+	}
+
+	.crumb a {
+		color: rgb(var(--muted));
+	}
+
+	.tag-page > header {
+		margin-bottom: 38px;
+		padding-bottom: 30px;
+		border-bottom: 1px solid rgba(var(--line), 0.84);
+	}
+
+	.tag-page > header > p:first-child {
+		margin-bottom: 0.5rem;
+		color: var(--accent-strong);
+		font-size: 0.7rem;
+		font-weight: 900;
+		letter-spacing: 0.16em;
+	}
+
+	h1 {
+		margin-bottom: 0.7rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: clamp(2.6rem, 7vw, 4.4rem);
+	}
+
+	h1 span {
+		margin-right: 0.18em;
+		color: var(--pink);
+	}
+
+	.tag-page > header > p:last-child {
+		margin: 0;
+		color: rgb(var(--muted));
+	}
+
+	.back {
+		display: inline-flex;
+		margin-top: 36px;
+		font-size: 0.86rem;
+		font-weight: 800;
+	}
+
+	@media (max-width: 620px) {
+		.tag-page {
+			width: min(100% - 24px, 920px);
+		}
+	}
+</style>

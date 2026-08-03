@@ -2,6 +2,7 @@
 title: "以太网驱动学习笔记：MAC、PHY 与 MII 接口"
 description: "整理 Ethernet MAC、PHY、MII/RMII/RGMII 接口的基本概念、Linux BSP 配置思路以及常见 bring up 调试方法。"
 category: '协议'
+tags: ['Ethernet', 'PHY', 'Linux 驱动']
 pubDate: "Jul 09 2026"
 ---
 

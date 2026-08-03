@@ -1,0 +1,24 @@
+---
+title: 'Demosaic Algorithm Notes'
+description: '围绕 Bayer RAW 到 RGB 的插值、边缘感知和质量评估做实验记录。'
+category: '项目'
+tags: ['Demosaic', 'Bayer', '图像处理']
+pubDate: 'Jun 20 2026'
+---
+
+## 项目目标
+
+整理 Demosaic 基础算法，实现可复现实验，并比较不同算法的边缘伪色和细节保留能力。
+
+## 实验结构
+
+```text
+raw/
+scripts/
+metrics/
+outputs/
+```
+
+## 相关链接
+
+- [什么是 Demosaic](/blog/what-is-demosaic/)
