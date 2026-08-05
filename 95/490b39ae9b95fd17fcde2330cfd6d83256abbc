@@ -1,0 +1,27 @@
+src/content/blog/vehicle_ethernet_phy.md
+  s_8eeccb63730314::t_ea3dff3be7a26b 1-458
+src/content/blog/vehicle_ethernet_tc10.md
+  s_8eeccb63730314::t_ea3dff3be7a26b 1-506
+src/content/blog/vehicle_ethernet_2.md
+  s_8eeccb63730314::t_ea3dff3be7a26b 2-1113
+src/content/blog/vehicle_ethernet_mdio.md
+  s_8eeccb63730314::t_ea3dff3be7a26b 1-840
+src/content/blog/vehicle_ethernet_1.md
+  s_8eeccb63730314::t_ea3dff3be7a26b 2-597
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "95490b39ae9b95fd17fcde2330cfd6d83256abbc",
+  "prompts": {},
+  "sessions": {
+    "s_8eeccb63730314": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa80c-71e5-76a3-b545-4507fbbf2beb",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
