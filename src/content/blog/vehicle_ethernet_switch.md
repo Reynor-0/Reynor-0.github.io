@@ -980,129 +980,344 @@ Port 1 收到帧
 
 在正常硬件转发路径中，这一系列操作都由 Switch 芯片内部完成，不需要 CPU 逐帧参与。
 
-## 从驱动代码反推硬件行为
+## 项目代码实证：在车载交换芯片上 Switch driver 真正做了什么
 
-理解 Switch 的硬件模型之后，再阅读驱动代码时，可以尝试按照“这段代码改变了什么硬件行为”进行分析。
+前面讲了 Switch 的硬件转发模型——控制面 vs 数据面、Port、VTU、ATU/FDB、FID、Ingress/Egress、CPU Port、寄存器空间分类、SMI 间接访问、一个帧经过 Switch 的完整过程。这些都是协议层抽象。下面看在量产代码里，Switch driver 真正实现了哪些、没实现哪些，以及实现的代码长什么样。
 
-例如看到下面的代码：
+本节以某车载 MCU 平台上的两款 Marvell 交换芯片（88Q5192 双 die / 88Q5152 单 die）驱动为例，所有代码用伪代码形式呈现，重点在讲清楚协议概念到代码的映射关系。
 
-```c
-switch_port_set_pvid(port, 10);
-```
+### 一些问题
 
-不要只停留在“向某个寄存器写入了 10”。
+Marvell 88Q5192/88Q5152 中我并没有看到类似VTU/ATU/动态学习和老化的逻辑，似乎是由**预烧录**的固件解决的。这里我主要讲讲driver中涉及到的一些功能：
+1. **电源/复位**：上电、复位、电源序列
+2. **MDIO 访问层**：SMI 间接访问、多 die 信号量、PHY 寄存器间接访问
+3. **端口 cmode/速率检测**：上电后读端口 cmode 寄存器确认配置生效
+4. **链路状态查询**：周期性读端口 link 状态
+5. **统计查询**：读 MIB 计数器
+6. **TC10 睡眠唤醒**：见第 3 章
+7. **外部 PHY 级联**：通过 switch 的 SMI 间接访问外部 PHY 寄存器
 
-它真正表示的是：
+### 控制面 VTable：switch_ops_t
 
-```text
-该端口收到 Untagged 帧时，默认将帧归入 VLAN 10
-```
-
-看到：
-
-```c
-switch_vtu_add(10, members, egress_mode);
-```
-
-可以进一步理解为：
-
-```text
-创建 VLAN 10
-指定哪些端口属于 VLAN 10
-指定这些端口发送时是否携带 VLAN Tag
-```
-
-看到：
+项目中实现了类似以下的一个控制面接口，抽象成了一个VTable
 
 ```c
-switch_atu_add(mac, fid, port_vector);
+/* 伪代码：Switch 控制面 VTable */
+typedef struct {
+        /*初始化 Switch 芯片和各个端口*/
+    status_t (*init) (switch_dev_t *dev);
+    status_t (*deinit) (switch_dev_t *dev);
+    status_t (*set_wakeup) (switch_dev_t *dev);
+    status_t (*set_sleep) (switch_dev_t *dev, sleep_mode_t mode);
+    status_t (*set_force_sleep) (switch_dev_t *dev);
+    status_t (*set_port_wakeup) (switch_dev_t *dev, uint8_t port);
+    status_t (*set_port_sleep) (switch_dev_t *dev, uint8_t port);
+    status_t (*set_ports_wakeup) (switch_dev_t *dev, uint32_t port_mask);
+    status_t (*set_ports_sleep) (switch_dev_t *dev, uint32_t port_mask);
+    status_t (*port_send_wake_msg) (switch_dev_t *dev, uint8_t port);
+
+    /* 查端口功耗模式 */
+    status_t (*get_port_status) (switch_dev_t *dev, uint8_t port, port_status_t *status);
+    /* 查 switch 整体功耗模式 */
+    status_t (*get_status) (switch_dev_t *dev, switch_status_t *status);
+
+    /* 通过 Switch 间接访问外部 PHY 寄存器（级联场景） */
+    status_t (*read_external_phy) (const switch_dev_t *dev,
+                                    uint32_t phyaddr, uint32_t devaddr,
+                                    uint32_t regaddr, uint32_t *result);
+    status_t (*write_external_phy) (const switch_dev_t *dev,
+                                     uint32_t phyaddr, uint32_t devaddr,
+                                     uint32_t regaddr, uint32_t data);
+
+    /* 通用 control 接口，分发到 SQI/Link/Reset/MIB 等命令 */
+    status_t (*control)(const switch_dev_t *dev, uint32_t cmd, void *data);
+} switch_ops_t;
 ```
 
-可以理解为：
-
-```text
-向 MAC 地址表中添加一条静态转发表项
-当对应 FID 中出现该目的 MAC 时，发送到指定端口
-```
-
-看到：
+### Switch device 抽象：switch_dev_t 结构
 
 ```c
-switch_port_set_state(port, FORWARDING);
+/* 伪代码：Switch 设备结构 */
+typedef struct switch_dev_t {
+    net_device_t base;                       /* 继承 net_device 基类 */
+    switch_status_t consumption_mode;        /* 当前功耗模式：SLEEP/ACTIVE/FAIL 等 */
+    uint16_t port;                           /* 连到本地 CPU/MAC 的端口号（CPU Port 概念） */
+    switch_diagnostic_t diagnostic;           /* 睡眠诊断：失败计数、per-port 失败记录 */
+    uint8_t ext_phy_num;                     /* 级联的外部 PHY 数量 */
+    const switch_phy_info_t *ext_phy;         /* 外部 PHY 信息数组 */
+    const switch_ops_t *ops;                 /* 上面那个 VTable */
+    switch_stats_t stats;                    /* 17 项 MIB 统计 */
+} switch_dev_t;
 ```
 
-表示的是：
+### 统计计数器：17 项 MIB
 
-```text
-允许该端口参与正常数据转发
+
+```c
+/* 伪代码：Switch MIB 计数器 */
+typedef struct {
+    uint32_t in_bad_octets;
+    uint32_t in_unicast;
+    uint32_t in_broadcasts;
+    uint32_t in_multicasts;
+    uint32_t in_rx_err;
+    uint32_t in_fcs_err;
+    uint32_t in_undersize;
+    uint32_t in_oversize;
+    uint32_t out_unicast;
+    uint32_t out_broadcasts;
+    uint32_t out_multicasts;
+    uint32_t out_fcs_err;
+    uint32_t inout_64Octets;           /* 64 字节包数 */
+    uint32_t inout_65to127Octets;      /* 65~127 字节包数 */
+    uint32_t inout_128to255Octets;
+    uint32_t inout_256to511Octets;
+    uint32_t inout_512to1023Octets;
+    uint32_t inout_1024toMaxOctets;
+} switch_stats_t;
 ```
 
-驱动里的寄存器值、位掩码和操作命令只是实现方式，最终目标都是改变 Switch 的转发行为。
+**这 17 项字段对应 IEEE 802.3 clause 30（Management）规定的 MIB 计数器**——任何符合 802.3 的 Switch 都该有这套统计（不同厂商可能字段命名略有差异）。上层通过 `control(dev, CMD_PORT_MIB_DUMP, ...)` 命令一次性 dump 这些计数器。
 
-## 阅读 Switch 驱动时可以关注什么
+**字节分布桶 `inout_64Octets` 等 6 项** 是按帧长分桶统计，对应 RFC 2819 RMON（远程监控）标准。可以用来分析链路上是小包多还是大包多——车载网络里诊断/控制流是小包，音视频流是大包，分布比例能反映流量健康度。
 
-我现在阅读一份新的 Switch 驱动时，通常会先寻找最底层的寄存器访问函数。
 
-例如：
+### SMI 间接访问：
 
-```text
-switch_read()
-switch_write()
-smi_read()
-smi_write()
-mdio_read()
-mdio_write()
+
+```
+等待 SMI Busy 清零
+        ↓
+向 SMI Command 写入设备地址、寄存器地址和 Read 命令
+        ↓
+等待 SMI Busy 清零
+        ↓
+从 SMI Data 读取结果
 ```
 
-先确认 CPU 通过什么接口访问 Switch，以及设备地址、端口号和寄存器地址是怎样编码的。
+看伪代码实现：
 
-然后再寻找端口初始化代码，确认每个端口的接口模式、速率、转发状态、PVID 和 VLAN 策略。
+```c
+/* 伪代码：SMI 间接访问读 */
+status_t switch_read_multi_addr_smi_reg(const switch_dev_t *dev, uint32_t port,
+                                        uint32_t regaddr, uint32_t *result)
+{
+    uint32_t val = 0;
+    uint32_t recval = 0u;
+    uint8_t retry = 0;
 
-接下来重点关注 VTU 和 ATU 的操作函数，因为这两部分基本决定了 Switch 的二层转发行为。
+    /* Step 1：组装命令字（Busy | Mode22 | Read | DevAddr | RegAddr） */
+    val = SMI_CMD_BUSY | SMI_CMD_MODE_22 | SMI_CMD_READ
+          | SMI_CMD_DEVADDR_SET(port) | SMI_CMD_REGADDR_SET(regaddr);
 
-最后再结合芯片手册，确认以下几个问题：
+    /* Step 2：写 SMI Multi-Address Command 寄存器，触发硬件发起 SMI 访问 */
+    switch_write_reg(dev, dev->bus_addr,
+                     SMI_MULTI_ADDR_CMD_REG, val, CLAUSE_22);
 
-```text
-一个端口属于哪些 VLAN
-Untagged 帧进入后使用哪个 PVID
-帧离开端口时是否携带 VLAN Tag
-MAC 地址使用 VID 还是 FID 进行查找
-未知单播、广播和组播怎样处理
-CPU Port 是否使用厂商自定义 Tag
-端口 Link Up 后是否还需要单独设置 Forwarding
+    /* Step 3：轮询 Busy 位清零（最多重试 3 次，每次等 5 ms） */
+    while (1) {
+        switch_read_reg(dev, dev->bus_addr,
+                        SMI_MULTI_ADDR_CMD_REG, &recval, CLAUSE_22);
+        if ((0 == (recval & SMI_CMD_BUSY)) || (retry > 3)) {
+            break;
+        }
+        sleep_ms(INIT_WAIT_MS);   /* 5 ms */
+        retry++;
+    }
+
+    /* Step 4：Busy 清零后，从 SMI Multi-Address Data 寄存器读结果 */
+    if ((retry <= 3)) {
+        switch_read_reg(dev, dev->bus_addr,
+                        SMI_MULTI_ADDR_DATA_REG, result, CLAUSE_22);
+    }
+    return OK;
+}
 ```
 
-只要能够回答这些问题，通常就已经能够建立起对整个 Switch 配置的基本认识。
 
-## 总结
+**逐字段拆解 SMI Command 字的位布局**：
 
-Switch 驱动与普通网络应用最大的区别，是驱动主要负责配置硬件转发规则，而不是由 CPU 逐包完成数据转发。
-
-VLAN Table 决定帧可以在哪些端口之间活动，ATU/FDB 决定目的 MAC 地址位于哪个端口，FID 用于划分 MAC 地址的学习和查找域，端口寄存器则决定每个端口是否允许转发、怎样处理 VLAN Tag 以及怎样参与整个交换网络。
-
-Access、Trunk 和 Hybrid 也不是完全独立的硬件功能，而是 PVID、VLAN Membership、Ingress Policy 和 Egress Tag 等配置组合后的表现。
-
-最终，一个帧在 Switch 内部经历的过程可以概括为：
-
-```text
-入口端口检查
-    ↓
-VLAN 分类
-    ↓
-源 MAC 学习
-    ↓
-目的 MAC 查找
-    ↓
-出口端口过滤
-    ↓
-Egress Tag 处理
-    ↓
-硬件发送
+```c
+#define SMI_MULTI_ADDR_CMD_REG          (0x0U)   /* Global2 空间的 SMI Command 寄存器偏移 */
+#define SMI_MULTI_ADDR_DATA_REG         (0x01U)  /* Global2 空间的 SMI Data 寄存器偏移 */
+#define SMI_CMD_BUSY                    (0x1<<15)  /* bit 15 = Busy */
+#define SMI_CMD_MODE_22                 (0x1<<12)  /* bit 12 = 1 表示 Clause 22 模式 */
+#define SMI_CMD_WRITE                   (0x01<<10) /* bit 10 = Write（OP=01） */
+#define SMI_CMD_READ                    (0x02<<10) /* bit 11 = Read（OP=10） */
+#define SMI_CMD_DEVADDR_OFFSET          (5U)
+#define SMI_CMD_DEVADDR_SET(x)          ((x) << SMI_CMD_DEVADDR_OFFSET)  /* bit 9:5 = 设备地址 */
+#define SMI_CMD_REGADDR_OFFSET          (0U)
+#define SMI_CMD_REGADDR_SET(x)          (x << SMI_CMD_REGADDR_OFFSET)    /* bit 4:0 = 寄存器地址 */
 ```
 
-CPU 通过寄存器、ATU 和 VTU 配置好这些规则后，Switch 就能够在不经过 CPU 软件转发的情况下，以硬件速度处理普通以太网帧。
 
-理解了这个过程后，再去阅读 Switch 驱动中的端口初始化、VLAN 配置、ATU 操作、SMI 间接访问和 Busy 位轮询，代码背后的硬件行为就会清晰很多。
+**Write 路径**：
+
+```c
+/* 伪代码：SMI 间接访问写 */
+status_t switch_write_multi_addr_smi_reg(const switch_dev_t *dev, uint32_t port,
+                                         uint32_t regaddr, uint32_t data)
+{
+    /* Step 1：先把数据写到 SMI Data 寄存器 */
+    switch_write_reg(dev, dev->bus_addr, SMI_MULTI_ADDR_DATA_REG, data, CLAUSE_22);
+
+    /* Step 2：组装命令字（Busy | Mode22 | Write | DevAddr | RegAddr），写 Command 寄存器启动 */
+    uint32_t val = SMI_CMD_BUSY | SMI_CMD_MODE_22 | SMI_CMD_WRITE
+                 | SMI_CMD_DEVADDR_SET(port) | SMI_CMD_REGADDR_SET(regaddr);
+    switch_write_reg(dev, dev->bus_addr, SMI_MULTI_ADDR_CMD_REG, val, CLAUSE_22);
+    return 0;
+}
+```
+
+注意 Write 比 Read 简单——不需要等 Busy 清零再读 Data，因为数据已经在第一步写进去了。但严格来说写完也应该轮询 Busy 确认硬件完成（部分实现会省略，因为 SMI Multi-Address Write 通常很快）。
+
+### 多 die 信号量：
+
+
+某些车载交换芯片（如 88Q5192）是**双 die 封装**——一个芯片里有 2 个独立的 Switch die（每个 die 最多 10 端口，共 20 端口）。两个 die 共享同一条 SMI 总线，但每个 die 有自己独立的 Global1/Global2 寄存器空间。
+
+**问题**：如果 CPU 要在 die0 和 die1 上同时操作 ATU/VTU（共享硬件表），就需要互斥。
+
+**方案**：在 Global1 寄存器空间里有一个 Semaphore 寄存器（`GLOBAL1_SEMAPHORE_REG = 0x15`），通过"写锁值 → 读回确认"实现硬件信号量。
+
+```c
+/* 伪代码：多 die 信号量加锁 */
+static inline void switch_lock_semaphore(switch_dev_t *dev)
+{
+    uint8_t count = 0;
+    uint32_t val = 0;
+
+    if (dev->is_locked) {
+        log("semaphore already locked\n");
+        return;
+    }
+
+    /* 遍历两个 die */
+    for (die_type_t die = DIE_0; die < DIE_UNUSED; die++) {
+        /* Step 1：切到目标 die（写 SMI 间接访问的 die 选择位） */
+        switch_switch_smi_die(dev, die);
+
+        /* Step 2：尝试写 LOCK_VALUE (0x8000) 到 Semaphore 寄存器 */
+        do {
+            switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, LOCK_VALUE);
+            val = 0u;
+            switch_read_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, &val);
+            if (LOCK_VALUE == val) {
+                break;   /* 读回等于写值 → 拿到锁 */
+            }
+#ifdef COMPATIBLE_WITH_SEMAPHORE_REG
+            else if (RMU_LOCK_VALUE != val && UNLOCK_VALUE != val) {
+                /* 读到非预期值（可能是其它 master 持锁）→ 先解锁再重试 */
+                switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, UNLOCK_VALUE);
+                log("unexpected lock val [0x%x] die [%d]\n", val, die);
+            }
+#endif
+            sleep_ms(1);
+            count++;
+        } while (count < 10u);   /* 最多重试 10 ms */
+
+        if (LOCK_VALUE == val) {
+            continue;   /* 这个 die 拿到锁，处理下一个 die */
+        }
+        /* 10 ms 还没拿到锁 → 强制解锁再锁一次（容错） */
+        switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, UNLOCK_VALUE);
+        switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, LOCK_VALUE);
+        val = 0u;
+        switch_read_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, &val);
+        log("force lock val [0x%x] die [%d]\n", val, die);
+    }
+    dev->is_locked = true;
+}
+
+/* 伪代码：多 die 信号量解锁 */
+static inline void switch_unlock_semaphore(switch_dev_t *dev)
+{
+    /* 解锁时分别给两个 die 写 UNLOCK_VALUE */
+    switch_switch_smi_die(dev, DIE_0);
+    switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, UNLOCK_VALUE);
+    switch_switch_smi_die(dev, DIE_1);
+    switch_write_multi_addr_smi_reg(dev, GLOBAL1_REG, SEMAPHORE_REG, UNLOCK_VALUE);
+    dev->is_locked = false;
+}
+```
+
+**关键宏定义**：
+
+```c
+#define GLOBAL1_SEMAPHORE_REG   (0x15u)    /* Global1 寄存器空间的 Semaphore 偏移 */
+#define LOCK_VALUE              (0x8000u)  /* 锁值：bit 15 = 1 */
+#define RMU_LOCK_VALUE          (0x0008u)  /* RMU（Remote Management Unit）持锁标志 */
+#define UNLOCK_VALUE            (0x0000u)  /* 解锁值 */
+```
+
+### 完整数据流图：CPU → Switch → 外部 PHY
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                       CPU / MCU / SoC                                │
+│                                                                      │
+│  switch_control(dev, CMD_PORT_MIB_DUMP)                              │
+│      │                                                               │
+│      ▼                                                               │
+│  switch_ops_t.control()                                              │
+│      │                                                               │
+│      ▼                                                               │
+│  switch_read_reg/write_reg()                                         │
+│      │                                                               │
+│      │ 调 bus_ops->read/write()，参数 mdio_msg_t                     │
+│      ▼                                                               │
+└──────┬──────────────────────────────────────────────────────────────┘
+       │ MDIO 总线（MDC + MDIO 信号）
+       │ clause 22/45 帧
+       ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                  Switch 芯片                                          │
+│                                                                       │
+│  ┌─── Global2 寄存器空间 ───────────────────────────────┐           │
+│  │  SMI_PHY_CMD (0x18)                                   │           │
+│  │  SMI_PHY_DATA (0x19)                                  │           │
+│  │  SMI_MULTI_ADDR_CMD (0x0)                            │           │
+│  │  SMI_MULTI_ADDR_DATA (0x1)                           │           │
+│  └───────────────────────────────────────────────────────┘           │
+│      │                                                               │
+│      │ CPU 写 SMI_PHY_CMD，触发 Switch 内部 SMI 控制器              │
+│      ▼                                                               │
+│  ┌─── Switch 内部 SMI 控制器 ─────────────────────────┐             │
+│  │  根据 SMI_FUNC 字段选择目标：                        │             │
+│  │    INNER_ACCESS  → die0/die1 内置 PHY                │             │
+│  │    EXTER_ACCESS  → die 上端口级联的外部 PHY          │             │
+│  │  发起第二次 MDIO 访问（clause 22 或 45）              │             │
+│  └───────────────────────────────────────────────────────┘             │
+│      │                                │                                │
+│      ▼ 内部 PHY                       ▼ 外部 PHY                      │
+│  ┌───────────────┐               ┌─────────────────┐                  │
+│  │ die0 内置 PHY │               │ 外部 PHY（如     │                  │
+│  │ 1000BASE-T1   │               │  88Q1110 等）   │                  │
+│  └───────────────┘               └─────────────────┘                  │
+│                                                                       │
+│  ┌─── Global1 寄存器空间 ────────────────────────────────┐           │
+│  │  GLOBAL1_SEMAPHORE_REG (0x15)  ← 多 die 互斥信号量     │           │
+│  │  ATU/VTU 操作命令寄存器（项目代码未直接用）            │           │
+│  └───────────────────────────────────────────────────────┘           │
+│                                                                       │
+│  ┌─── Per-Port 寄存器 ──────────────────────────────────┐            │
+│  │  Port 0, reg 0x00 = cmode + speed 状态               │            │
+│  │  Port 5, reg 0x00 = ext MCU port cmode + speed        │            │
+│  │  ...                                                   │            │
+│  │  （Port Forwarding、PVID、Egress Tag 等不在 driver 配置）│           │
+│  └───────────────────────────────────────────────────────┘            │
+│                                                                       │
+│  ┌─── Switch 内置固件（ARM core）──────────────────────┐              │
+│  │  • 加载出厂/产线烧录的 VTU/VLAN Membership 配置      │              │
+│  │  • ATU 动态学习 + 老化                                │              │
+│  │  • 已知单播/未知单播/广播/组播转发决策                │              │
+│  │  • QoS 调度                                          │              │
+│  │  → 这些 driver 都不参与                              │              │
+│  └───────────────────────────────────────────────────────┘            │
+└───────────────────────────────────────────────────────────────────────┘
+```
+
+
 
 ## 系列导航
 
