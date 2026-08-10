@@ -1,0 +1,16 @@
+src/content/blog/vehicle_ethernet_gPTP.md
+  h_e5e187dd8d54e6 1-2131
+src/content/blog/demosaic-algorithm-notes.md
+  h_e5e187dd8d54e6 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "4595a2605a4bd791399d61a3beaaca11b01e2baf",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
