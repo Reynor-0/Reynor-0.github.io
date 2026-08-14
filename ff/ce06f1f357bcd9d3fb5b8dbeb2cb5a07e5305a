@@ -1,0 +1,30 @@
+src/content/blog/sherlock-ai.md
+  h_e5e187dd8d54e6 1-149
+src/content/blog/ethernet_intern.md
+  h_e5e187dd8d54e6 1-430
+src/content/blog/uds.md
+  s_02e6d8d3e1d668::t_8f9afedd7b7061 1-339
+src/content/blog/uds_doip_flash.md
+  s_02e6d8d3e1d668::t_1189f170145e8d 1-917
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "ffce06f1f357bcd9d3fb5b8dbeb2cb5a07e5305a",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_02e6d8d3e1d668": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fefb6-a4c6-75b0-8f18-634cfb8ef437",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
