@@ -4,7 +4,7 @@ description: '从有限缓冲区、队列语义和背压出发，梳理实时预
 category: '方法'
 tags: ['生产者消费者', '缓冲区', '系统设计']
 pubDate: 'Jun 29 2026'
-heroImage: '../../assets/blog-placeholder-4.jpg'
+heroImage: '../../../assets/blog-placeholder-4.jpg'
 ---
 
 在图像、视频、音频和日志采集系统中，生产者和消费者很少天然同速。Camera ISP Pipeline 输出帧，V4L2、显示器、编码器或算法模块消费帧；网络接收线程写入包，业务线程解析包；日志线程写入事件，落盘线程批量刷盘。这些问题本质上都是有限缓冲区上的速率匹配问题。

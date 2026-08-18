@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { tagSlug } from '../lib/blog';
 
 type Props = {
 	post: CollectionEntry<'blog'>;
@@ -14,13 +13,6 @@ const { post, compact = false } = Astro.props;
 	<div class="article-copy">
 		<h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
 		<p>{post.data.description}</p>
-		<div class="article-tags" aria-label="文章标签">
-			{
-				post.data.tags.map((tag) => (
-					<a href={`/tags/${tagSlug(tag)}/`}>#{tag}</a>
-				))
-			}
-		</div>
 	</div>
 	<a class="article-arrow" href={`/blog/${post.id}/`} aria-label={`阅读《${post.data.title}》`}>
 		<svg viewBox="0 0 24 24" aria-hidden="true">
@@ -46,7 +38,7 @@ const { post, compact = false } = Astro.props;
 		left: 0;
 		width: 0;
 		height: 1px;
-		background: linear-gradient(90deg, var(--accent), var(--pink));
+		background: var(--accent);
 		content: "";
 		transition: width 240ms ease;
 	}
@@ -85,28 +77,6 @@ const { post, compact = false } = Astro.props;
 		-webkit-line-clamp: 2;
 	}
 
-	.article-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-	}
-
-	.article-tags a {
-		padding: 0.14rem 0.52rem;
-		border: 1px solid rgba(var(--line), 0.7);
-		border-radius: 999px;
-		background: rgba(var(--soft), 0.68);
-		color: rgb(var(--muted));
-		font-size: 0.72rem;
-		line-height: 1.5;
-	}
-
-	.article-tags a:hover {
-		border-color: rgba(var(--pink), 0.44);
-		background: var(--pink-soft);
-		color: #bd6689;
-	}
-
 	.article-arrow {
 		display: grid;
 		width: 36px;
@@ -120,7 +90,7 @@ const { post, compact = false } = Astro.props;
 
 	.article-arrow:hover {
 		border-color: rgba(var(--accent), 0.48);
-		background: linear-gradient(145deg, var(--accent-soft), var(--pink-soft));
+		background: var(--accent-soft);
 		transform: translateY(-2px);
 	}
 

@@ -2,6 +2,7 @@
 title: '车载以太网（六）：DMA 描述符环'
 description: 'DMA 描述符并不是数据本身，而是 CPU 与 Ethernet DMA 之间用来描述“数据放在哪里、长度是多少、现在归谁处理”的控制结构 '
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 6 }
 tags: ['Ethernet', 'DMA', 'MAC驱动', '汽车电子']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 06 2026'

@@ -10,7 +10,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const projectCount = posts.filter((post) => post.data.category === '项目').length;
 ---
 
 <!doctype html>
@@ -23,17 +22,25 @@ const projectCount = posts.filter((post) => post.data.category === '项目').len
 		<main class="articles-shell">
 			<header class="page-head">
 				<div>
-					<p class="eyebrow">ALL ARTICLES</p>
 					<h1>所有文章</h1>
 					<p>把问题、判断与答案放回同一条时间线。</p>
 				</div>
-				<a class="search-shortcut" href="/search">
-					<svg viewBox="0 0 20 20" aria-hidden="true">
-						<circle cx="8.5" cy="8.5" r="5.2" />
-						<path d="m12.4 12.4 4 4" />
-					</svg>
-					搜索 {posts.length} 篇文章
-				</a>
+				<div class="page-actions">
+					<a class="series-shortcut" href="/series">
+						<svg viewBox="0 0 20 20" aria-hidden="true">
+							<path d="M4 3.5h9.5A2.5 2.5 0 0 1 16 6v10.5H6.5A2.5 2.5 0 0 1 4 14V3.5Z" />
+							<path d="M6.5 13.5H16M7 7h6M7 10h4" />
+						</svg>
+						浏览技术专栏
+					</a>
+					<a class="search-shortcut" href="/search">
+						<svg viewBox="0 0 20 20" aria-hidden="true">
+							<circle cx="8.5" cy="8.5" r="5.2" />
+							<path d="m12.4 12.4 4 4" />
+						</svg>
+						搜索文章
+					</a>
+				</div>
 			</header>
 
 			<div class="article-layout">
@@ -44,7 +51,7 @@ const projectCount = posts.filter((post) => post.data.category === '项目').len
 							<h2 id="article-list-title">最近更新</h2>
 							<p>包含技术笔记、问题复盘、阅读摘记与项目记录。</p>
 						</div>
-						<span>{posts.length} 篇文章 · {projectCount} 个项目</span>
+						<span>{posts.length} 篇文章</span>
 					</div>
 					<div class="article-list">
 						{posts.map((post) => <ArticleRow post={post} />)}
@@ -71,18 +78,9 @@ const projectCount = posts.filter((post) => post.data.category === '项目').len
 		border-bottom: 1px solid rgba(var(--line), 0.86);
 	}
 
-	.eyebrow {
-		margin-bottom: 0.5rem;
-		color: var(--accent-strong);
-		font-size: 0.72rem;
-		font-weight: 900;
-		letter-spacing: 0.16em;
-	}
-
 	.page-head h1 {
 		margin-bottom: 0.55rem;
 		color: var(--heading);
-		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
 		font-size: clamp(2.5rem, 6vw, 4.2rem);
 	}
 
@@ -91,35 +89,46 @@ const projectCount = posts.filter((post) => post.data.category === '项目').len
 		color: rgb(var(--muted));
 	}
 
-	.search-shortcut {
+	.page-actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		gap: 9px;
+	}
+
+	.search-shortcut,
+	.series-shortcut {
 		display: inline-flex;
 		align-items: center;
-		min-height: 44px;
-		padding: 0 1rem;
+		min-height: 40px;
+		padding: 0.25rem 0;
 		gap: 8px;
-		border: 1px solid rgba(var(--line), 0.82);
-		border-radius: 999px;
-		background: rgba(var(--card), 0.75);
+		border-bottom: 1px solid transparent;
 		color: rgb(var(--muted));
 		font-size: 0.84rem;
 		font-weight: 800;
 		white-space: nowrap;
 	}
 
-	.search-shortcut:hover {
-		border-color: rgba(var(--accent), 0.44);
-		background: var(--accent-soft);
+	.search-shortcut:hover,
+	.series-shortcut:hover {
+		border-color: var(--accent);
 		color: var(--accent-strong);
-		transform: translateY(-1px);
 	}
 
-	.search-shortcut svg {
+	.search-shortcut svg,
+	.series-shortcut svg {
 		width: 16px;
 		height: 16px;
 		fill: none;
 		stroke: currentColor;
 		stroke-linecap: round;
 		stroke-width: 1.8;
+	}
+
+	.series-shortcut {
+		color: var(--accent-strong);
 	}
 
 	.article-layout {

@@ -2,6 +2,7 @@
 title: '车载以太网（五）：Switch 硬件转发模型'
 description: '从嵌入式软件开发的角度理解车载以太网 Switch、VLAN、ATU、FID、端口配置与硬件转发。'
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 5 }
 tags: ['Ethernet', 'Switch', 'VLAN', 'ATU', '汽车电子']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 05 2026'
@@ -1318,11 +1319,3 @@ static inline void switch_unlock_semaphore(switch_dev_t *dev)
 ```
 
 
-
-## 系列导航
-
-- [车载以太网（一）：以太网帧与 VLAN](/blog/vehicle_ethernet_1/)
-- [车载以太网（二）：MDIO 与 Clause 22/45](/blog/vehicle_ethernet_mdio/)
-- [车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI](/blog/vehicle_ethernet_phy/)
-- [车载以太网（四）：TC10 休眠与唤醒](/blog/vehicle_ethernet_tc10/)
-- [车载以太网（五）：Switch 硬件转发模型](/blog/vehicle_ethernet_2/)

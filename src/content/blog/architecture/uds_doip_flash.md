@@ -2,6 +2,7 @@
 title: 'UDS（二）：DoIP 刷写请求如何从以太网走到 Flash'
 description: '沿着 Ethernet DMA、lwIP、SoAd、DoIP、UDS、更新状态机和 Flash 驱动，追踪一条刷写请求在 ECU 内部的完整数据路径。'
 category: '架构'
+series: { id: 'uds-diagnostics', order: 2 }
 tags: ['UDS', 'DoIP', 'Ethernet', 'lwIP', 'Flash', 'Bootloader']
 pubDate: 'Aug 11 2026'
 ---
@@ -910,8 +911,3 @@ Ethernet 接收、TCP 解析属于快路径，Flash 擦写属于慢路径。队�
 - [ISO 14229-1:2026 — Unified diagnostic services, Part 1](https://www.iso.org/standard/87962.html)
 - [AUTOSAR Classic Platform — Specification of Diagnostic over IP](https://www.autosar.org/fileadmin/standards/R24-11/CP/AUTOSAR_CP_SWS_DiagnosticOverIP.pdf)
 - [AUTOSAR Classic Platform — Specification of Diagnostic Communication Manager](https://www.autosar.org/fileadmin/standards/R23-11/CP/AUTOSAR_CP_SWS_DiagnosticCommunicationManager.pdf)
-
-## 系列导航
-
-- [UDS 诊断协议：从报文格式到刷写流程](/blog/uds/)
-- [UDS（二）：DoIP 刷写请求如何从以太网走到 Flash](/blog/uds_doip_flash/)

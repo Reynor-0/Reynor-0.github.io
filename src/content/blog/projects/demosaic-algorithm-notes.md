@@ -2,6 +2,7 @@
 title: 'Demosaic Algorithm Notes'
 description: '围绕 Bayer RAW 到 RGB 的插值、边缘感知和质量评估做实验记录。'
 category: '项目'
+series: { id: 'demosaic', order: 3 }
 tags: ['Demosaic', 'Bayer', '图像处理']
 pubDate: 'Jun 20 2026'
 ---

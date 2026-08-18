@@ -2,6 +2,7 @@
 title: '车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI'
 description: '梳理车载以太网 PHY 的启动与建链流程、Master/Slave 时钟关系、SQI 诊断及其驱动实现。'
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 3 }
 tags: ['Ethernet', '100BASE-T1', '1000BASE-T1', 'PHY', 'SQI']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 05 2026'
@@ -448,11 +449,3 @@ case PHY_T1_PORT_REREAD_SQI_MODE:
 - 通过"先阶段 2 粗查 + 阶段 3 密查复检"双确认，过滤瞬态误报
 - 复检还是差才触发硬件复位——避免频繁 reset 导致链路抖动
 - PHY 硬件复位后回到阶段 2 重新查 link，等 link 重新 up 后再开始查 SQI
-
-## 系列导航
-
-- [车载以太网（一）：以太网帧与 VLAN](/blog/vehicle_ethernet_1/)
-- [车载以太网（二）：MDIO 与 Clause 22/45](/blog/vehicle_ethernet_mdio/)
-- [车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI](/blog/vehicle_ethernet_phy/)
-- [车载以太网（四）：TC10 休眠与唤醒](/blog/vehicle_ethernet_tc10/)
-- [车载以太网（五）：Switch 硬件转发模型](/blog/vehicle_ethernet_2/)

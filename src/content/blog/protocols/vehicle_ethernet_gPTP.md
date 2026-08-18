@@ -2,6 +2,7 @@
 title: '车载以太网（七）：gPTP / IEEE 802.1AS 时间同步'
 description: '去理解为什么需要时间同步，时间同步又是怎么做的'
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 7 }
 tags: ['Ethernet', 'gPTP', '时间同步', 'IEEE 802.1AS', '汽车电子']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 09 2026'

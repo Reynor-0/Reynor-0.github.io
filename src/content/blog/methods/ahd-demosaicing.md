@@ -2,6 +2,7 @@
 title: 'AHD Demosaicing'
 description: '围绕 AHD Demosaic 算法的阅读计划和关键问题。'
 category: '方法'
+series: { id: 'demosaic', order: 2 }
 tags: ['AHD', 'Demosaic', '图像处理']
 pubDate: 'Jun 12 2026'
 ---

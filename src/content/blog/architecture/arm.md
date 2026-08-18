@@ -4,7 +4,7 @@ description: '系统整理 ARM 架构、处理器模式、寄存器、指令、�
 category: '架构'
 tags: ['ARM', 'CPU 架构', '中断']
 pubDate: 'Jul 07 2026'
-heroImage: '../../assets/blog-placeholder-4.jpg'
+heroImage: '../../../assets/blog-placeholder-4.jpg'
 ---
 
 ## ARM 架构是什么

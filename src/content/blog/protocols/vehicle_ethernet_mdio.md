@@ -2,6 +2,7 @@
 title: '车载以太网（二）：MDIO 与 Clause 22/45'
 description: '理解 MDC/MDIO 管理总线、Clause 22 与 Clause 45 寄存器访问，并结合 AURIX GETH 梳理 PHY 管理路径。'
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 2 }
 tags: ['Ethernet', 'MDIO', 'Clause 22', 'Clause 45', 'PHY']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 05 2026'
@@ -830,11 +831,3 @@ MAC 控制器硬件 MDIO 控制器（如 AURIX GETH）
     ▼
 PHY 芯片（MDIO 总线上的从设备）
 ```
-
-## 系列导航
-
-- [车载以太网（一）：以太网帧与 VLAN](/blog/vehicle_ethernet_1/)
-- [车载以太网（二）：MDIO 与 Clause 22/45](/blog/vehicle_ethernet_mdio/)
-- [车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI](/blog/vehicle_ethernet_phy/)
-- [车载以太网（四）：TC10 休眠与唤醒](/blog/vehicle_ethernet_tc10/)
-- [车载以太网（五）：Switch 硬件转发模型](/blog/vehicle_ethernet_2/)

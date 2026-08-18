@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { SERIES_DEFINITIONS, getSeriesPosts } from '../../lib/series';
+import { SITE_TITLE } from '../../consts';
+
+const posts = await getCollection('blog');
+const seriesItems = SERIES_DEFINITIONS.map((definition) => ({
+	definition,
+	posts: getSeriesPosts(posts, definition.id),
+})).filter((series) => series.posts.length > 0);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead
+			title={`专栏 - ${SITE_TITLE}`}
+			description="按连续阅读路径组织的技术专栏，从基础概念逐步进入驱动、协议和项目实践。"
+		/>
+	</head>
+	<body>
+		<Header />
+		<main class="series-shell">
+			<header class="page-head">
+				<div>
+					<h1>技术专栏</h1>
+					<p>把互相依赖的文章排成一条可以连续阅读的路径。</p>
+				</div>
+			</header>
+
+			<ol class="series-list">
+				{
+					seriesItems.map(({ definition, posts: seriesPosts }, index) => (
+						<li>
+							<a class="series-row" href={`/series/${definition.id}/`}>
+								<span class="series-number">{String(index + 1).padStart(2, '0')}</span>
+								<div class="series-copy">
+									<h2>{definition.title}</h2>
+									<p>{definition.description}</p>
+								</div>
+								<div class="series-action">
+									<strong>{seriesPosts.length} 篇</strong>
+									<svg viewBox="0 0 24 24" aria-hidden="true">
+										<path d="M7 17 17 7M8 7h9v9" />
+									</svg>
+								</div>
+							</a>
+						</li>
+					))
+				}
+			</ol>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.series-shell {
+		width: min(100% - 40px, 1160px);
+	}
+
+	.page-head {
+		margin-bottom: 42px;
+		padding-bottom: 30px;
+		border-bottom: 1px solid rgba(var(--line), 0.86);
+	}
+
+	.page-head h1 {
+		margin-bottom: 0.55rem;
+		color: var(--heading);
+		font-size: clamp(2.5rem, 6vw, 4.2rem);
+	}
+
+	.page-head p:last-child {
+		margin: 0;
+		color: rgb(var(--muted));
+	}
+
+	.series-list {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.series-list li {
+		border-bottom: 1px solid rgba(var(--line), 0.88);
+	}
+
+	.series-list li:first-child {
+		border-top: 1px solid rgba(var(--line), 0.88);
+	}
+
+	.series-row {
+		position: relative;
+		display: grid;
+		grid-template-columns: 62px minmax(0, 1fr) 80px;
+		align-items: center;
+		padding: 1.8rem 0.8rem;
+		gap: 28px;
+		color: rgb(var(--ink));
+	}
+
+	.series-row::before {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		background: rgba(var(--soft), 0.82);
+		content: "";
+		opacity: 0.82;
+		transition: width 260ms ease;
+	}
+
+	.series-row:hover::before {
+		width: 100%;
+	}
+
+	.series-row > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.series-number {
+		padding-top: 0.22rem;
+		color: rgba(var(--muted), 0.64);
+		font-family: Georgia, serif;
+		font-size: 1.1rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+	}
+
+	.series-copy {
+		min-width: 0;
+	}
+
+	.series-copy h2 {
+		margin: 0 0 0.42rem;
+		color: var(--heading);
+		font-size: clamp(1.3rem, 3vw, 1.72rem);
+	}
+
+	.series-copy > p {
+		max-width: 760px;
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.94rem;
+	}
+
+	.series-action {
+		display: grid;
+		justify-items: end;
+		padding-top: 0.2rem;
+		gap: 1rem;
+	}
+
+	.series-action strong {
+		color: rgb(var(--muted));
+		font-size: 0.78rem;
+		white-space: nowrap;
+	}
+
+	.series-action svg {
+		width: 24px;
+		height: 24px;
+		fill: none;
+		stroke: var(--accent-strong);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.8;
+	}
+
+	.series-row:hover .series-action svg {
+		transform: translate(2px, -2px);
+	}
+
+	@media (max-width: 700px) {
+		.series-shell {
+			width: min(100% - 24px, 1160px);
+		}
+
+		.series-row {
+			grid-template-columns: 42px minmax(0, 1fr);
+			padding: 1.6rem 0.25rem;
+			gap: 14px;
+		}
+
+		.series-action {
+			display: none;
+		}
+	}
+</style>

@@ -2,6 +2,7 @@
 title: '车载以太网（一）：以太网帧与 VLAN'
 description: '从 Ethernet II 帧、802.1Q、Q-in-Q 到 lwIP VLAN 收发路径，建立车载以太网二层帧与 VLAN 基础。'
 category: '协议'
+series: { id: 'vehicle-ethernet', order: 1 }
 tags: ['Ethernet', 'VLAN', 'lwIP', '汽车电子']
 pubDate: 'Jun 08 2026'
 updatedDate: 'Aug 05 2026'
@@ -587,11 +588,3 @@ lwIP 内核 ethernet.c
     返回 (pbuf->priority << 13) | vid
     重新组装 TCI 插回以太网帧
 ```
-
-## 系列导航
-
-- [车载以太网（一）：以太网帧与 VLAN](/blog/vehicle_ethernet_1/)
-- [车载以太网（二）：MDIO 与 Clause 22/45](/blog/vehicle_ethernet_mdio/)
-- [车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI](/blog/vehicle_ethernet_phy/)
-- [车载以太网（四）：TC10 休眠与唤醒](/blog/vehicle_ethernet_tc10/)
-- [车载以太网（五）：Switch 硬件转发模型](/blog/vehicle_ethernet_2/)
