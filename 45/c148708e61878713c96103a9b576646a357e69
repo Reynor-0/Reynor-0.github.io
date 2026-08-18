@@ -1,0 +1,139 @@
+src/content/blog/drivers/imx415_driver.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-1142
+src/content/blog/architecture/uds_doip_flash.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-913
+src/content/blog/projects/camera_app_02.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-573
+src/content/blog/drivers/write_imx415_driver.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 5
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-4,6-1615
+src/components/SeriesArticleNav.astro
+  s_02e6d8d3e1d668::t_d5b7bb824a399b 58-60,117,166
+  s_02e6d8d3e1d668::t_d2fe2ea93e0270 16
+  s_02e6d8d3e1d668::t_8023e2533071c8 1-15,17-57,61-116,118-165,167-204
+src/content/blog/protocols/vehicle_ethernet_tc10.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-499
+src/content/blog/architecture/arm.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-1549
+src/content/blog/projects/v4l2-camera-pipeline.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-37
+src/pages/series/[slug].astro
+  s_02e6d8d3e1d668::t_f6e6e9a1897f6b 74,77-78,80-81,83-84,87-89,93,95-99,103,105-106,109,116,118-119
+  s_02e6d8d3e1d668::t_9338cdd2468be4 35,38,40,42,46,53
+  s_02e6d8d3e1d668::t_8023e2533071c8 1-34,36-37,39,41,43-45,47-52,54-73,75-76,79,82,85-86,90-92,94,100-102,104,107-108,110-115,117,120-134,136-138,142,148-152,154,157-160,162-163,167-168,170,175-183,186-188,193,195-200,203-221,223-226,228-239,244-246
+  s_02e6d8d3e1d668::t_7551d3694da2c7 135,139-141,143-147,153,155-156,161,164-166,169,171-174,184-185,189-192,194,201-202,222,227,240-243
+src/content/blog/projects/camera_app_08.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-378
+src/content/blog/protocols/uds.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-340
+src/content/blog/protocols/vehicle_ethernet_gPTP.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-2132
+src/content/blog/protocols/vehicle_ethernet_1.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-590
+src/lib/series.ts
+  s_02e6d8d3e1d668::t_0f2139ef3b9309 1-91
+src/styles/global.css
+  s_02e6d8d3e1d668::t_e0d5855a597947 2-10,14-20,23-27,31-51,71,79,110,188
+src/content/blog/projects/camera_app_05.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-368
+src/layouts/BlogPost.astro
+  s_02e6d8d3e1d668::t_4a4a66c0075dac 244-247,281,290,329,568-574,578-579
+  s_02e6d8d3e1d668::t_836d3089671d12 233-234,236,239-241,250-254,256-257,260-262,265-266,269-272,276-278,285-286,288-289,298,304,309,316,326-328,336-337,343-344,359,446-465,471,474,482,485,488-567,575-577,580-593
+  s_02e6d8d3e1d668::t_ecbdcd2b3724df 41-42,54-56,59-86,98-103
+  s_02e6d8d3e1d668::t_561de3baa81f3b 9,11,40,104
+  s_02e6d8d3e1d668::t_1e92e9fc8004b8 279-280
+src/content/blog/projects/camera_app_01.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-649
+src/content/blog/protocols/vehicle_ethernet_phy.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-451
+src/content/blog/methods/ahd-demosaicing.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-18
+src/content.config.ts
+  s_02e6d8d3e1d668::t_0f2139ef3b9309 29-40
+  s_02e6d8d3e1d668::t_2174341ca38cf6 6-22
+src/components/Footer.astro
+  s_02e6d8d3e1d668::t_d5b7bb824a399b 30
+src/pages/blog/index.astro
+  s_02e6d8d3e1d668::t_35acbccff91b10 41,54,104-105,107,116
+  s_02e6d8d3e1d668::t_561de3baa81f3b 28-40,42-43,92-101,114-115,120-121,130-131
+src/content/blog/projects/camera_app_09.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-473
+src/content/blog/operating-systems/device-tree.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-205
+src/content/blog/methods/what-is-demosaic.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 5
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-4,6-39
+src/content/blog/projects/camera_app_03.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-374
+src/content/blog/drivers/tca9539.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-264
+src/content/blog/projects/camera_app_04.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-93
+src/components/HeaderLink.astro
+  s_02e6d8d3e1d668::t_e0d5855a597947 17,22,24-25,28-38,45-47
+src/content/blog/protocols/vehicle_ethernet_switch.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-1321
+src/components/ArticleRow.astro
+  s_02e6d8d3e1d668::t_ff63c85995fe54 41,93
+src/content/blog/projects/camera_app_07.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-447
+src/content/blog/drivers/v4l2-buffer-management.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-22
+src/components/BlogSidebar.astro
+  s_02e6d8d3e1d668::t_74092d9749a4f1 4,14-32,51-53,56,60,66-101
+  s_02e6d8d3e1d668::t_369a25d258ad8e 143-145,174,245,251,266-267,322,330,335,343,357,376,465
+  s_02e6d8d3e1d668::t_5cf572702331ce 460
+  s_02e6d8d3e1d668::t_17e22fee068524 210,221,225,239-240,244,249-250,255,270,281,285,355-356,358-375,377-457
+src/content/blog/projects/demosaic-algorithm-notes.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-26
+src/pages/series/index.astro
+  s_02e6d8d3e1d668::t_8023e2533071c8 1-40,42-65,68-98,102-111,113-139,142,144-147,149-166,169-195
+  s_02e6d8d3e1d668::t_d8578d190ef318 66-67,99-101,112,140-141,143,148,167-168
+  s_02e6d8d3e1d668::t_4e35c1741d9e44 41
+src/components/Header.astro
+  s_02e6d8d3e1d668::t_561de3baa81f3b 3,35,92
+  s_02e6d8d3e1d668::t_ab9830168f2a99 16,22-31,48-56
+  s_02e6d8d3e1d668::t_62d23be1084fd2 268-275,279,285-292,297-298,300,317,327,343,348-349,354,364,366,373-374,389-416,432,436,438,515,549-551,559-560,564-589,592-593,598
+  s_02e6d8d3e1d668::t_b37d71a34c6da9 209-247,251-252,255-258
+src/content/blog/methods/producer-consumer-rate-mismatch.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-144
+src/content/blog/drivers/phy88q1110.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-372
+src/content/blog/protocols/soc_camera_data_flow.md
+  s_02e6d8d3e1d668::t_38f492ad4e28de 1-4,6-2932
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 5
+src/content/blog/protocols/vehicle_ethernet_dma.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-3208
+src/content/blog/projects/camera_app_06.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-516
+src/content/blog/protocols/vehicle_ethernet_mdio.md
+  s_02e6d8d3e1d668::t_c6e474de11f7b4 1-833
+src/pages/index.astro
+  s_02e6d8d3e1d668::t_d98750b2240062 117-173
+  s_02e6d8d3e1d668::t_425d3bc6e4e5cc 191-192,195,197,200-202,204,207,218-219,223-239,277,279-280,317-318,339,362,368-372,374,384,386,396,404,413,440-465,495,511,537-539,542-545
+  s_02e6d8d3e1d668::t_d7a8b292cd2f6c 503,505-506
+  s_02e6d8d3e1d668::t_4a4a66c0075dac 504
+  s_02e6d8d3e1d668::t_12f33a7e2e9834 2,25,39
+  s_02e6d8d3e1d668::t_8cfdbc68ae8bcd 8-9,31,38,40-41,44-46,55,58,93,95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "45c148708e61878713c96103a9b576646a357e69",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_02e6d8d3e1d668": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fefb6-a4c6-75b0-8f18-634cfb8ef437",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
