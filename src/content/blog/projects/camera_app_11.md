@@ -1,6 +1,7 @@
 ---
 title: 'Camera 开发（十一）：V4L2 CaptureSession 会话重建'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，L1 失败后销毁并重建完整 V4L2 capture session'
+series: { id: 'camera-development', order: 11 }
 tags: ['Camera', 'Linux', 'V4L2', '图像处理']
 pubDate: 'Jun 26 2026'
 ---

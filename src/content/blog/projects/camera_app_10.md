@@ -1,6 +1,7 @@
 ---
 title: 'Camera 开发（十）：V4L2 采集流 L1 局部恢复'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，连续采集超时后用 STREAMOFF/QBUF/STREAMON 恢复 capture queue'
+series: { id: 'camera-development', order: 10 }
 tags: ['Camera', 'Linux', 'V4L2', '图像处理']
 pubDate: 'Jun 25 2026'
 ---
