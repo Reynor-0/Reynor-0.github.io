@@ -1,246 +1,47 @@
 ---
-import { type CollectionEntry, getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import Header from '../../components/Header.astro';
-import { SERIES_DEFINITIONS, getSeriesPosts, type SeriesDefinition } from '../../lib/series';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import SeriesEmpty from '../../components/SeriesEmpty.astro';
+import BlogPost from '../../layouts/BlogPost.astro';
+import { estimateReadingMinutes } from '../../lib/blog';
+import { getSeriesDefinitions, getSeriesPosts, type SeriesDefinition } from '../../lib/series';
 
 type Props = {
 	definition: SeriesDefinition;
-	posts: CollectionEntry<'blog'>[];
+	post?: CollectionEntry<'blog'>;
 };
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
-	return SERIES_DEFINITIONS.map((definition) => ({
+	const definitions = await getSeriesDefinitions(posts);
+
+	return definitions.map((definition) => ({
 		params: { slug: definition.id },
 		props: {
 			definition,
-			posts: getSeriesPosts(posts, definition.id),
+			post: getSeriesPosts(posts, definition.id)[0],
 		},
 	}));
 }
 
-const { definition, posts } = Astro.props;
+const { definition, post } = Astro.props;
+const rendered = post ? await render(post) : undefined;
+const Content = rendered?.Content;
+const rawBody = post && 'body' in post && typeof post.body === 'string' ? post.body : '';
+const readingMinutes = estimateReadingMinutes(rawBody);
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-	<head>
-		<BaseHead title={definition.title} description={definition.description} />
-	</head>
-	<body>
-		<Header />
-		<main class="series-detail-shell">
-			<a class="series-back" href="/series"><span aria-hidden="true">←</span> 全部专栏</a>
-
-			<header class="series-head">
-				<div>
-					<h1>{definition.title}</h1>
-					<p>{definition.description}</p>
-				</div>
-				<span>{posts.length} 篇</span>
-			</header>
-
-			<section class="chapters" aria-labelledby="chapter-title">
-				<h2 class="sr-only" id="chapter-title">专栏目录</h2>
-
-				<ol>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									<span class="chapter-number">{String(post.data.series?.order).padStart(2, '0')}</span>
-									<div class="chapter-copy">
-										<h3>{post.data.title}</h3>
-										<p>{post.data.description}</p>
-									</div>
-									<svg viewBox="0 0 24 24" aria-hidden="true">
-										<path d="M7 17 17 7M8 7h9v9" />
-									</svg>
-								</a>
-							</li>
-						))
-					}
-				</ol>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
-
-<style>
-	.series-detail-shell {
-		width: min(100% - 48px, 1120px);
-	}
-
-	.series-back {
-		display: inline-flex;
-		align-items: center;
-		margin-bottom: 2.15rem;
-		gap: 0.45rem;
-		color: var(--accent-strong);
-		font-size: 0.84rem;
-		font-weight: 750;
-	}
-
-	.series-back:hover {
-		color: var(--link-hover);
-		transform: translateX(-2px);
-	}
-
-	.series-head {
-		display: flex;
-		align-items: end;
-		justify-content: space-between;
-		margin-bottom: 3rem;
-		padding-bottom: 2rem;
-		gap: 40px;
-		border-bottom: 1px solid rgba(var(--line), 0.92);
-	}
-
-	.series-head h1 {
-		margin-bottom: 0.8rem;
-		color: var(--heading);
-		font-size: clamp(2.8rem, 6vw, 4.5rem);
-		line-height: 1.08;
-	}
-
-	.series-head p {
-		max-width: 720px;
-		margin: 0;
-		color: rgb(var(--muted));
-		font-size: 1rem;
-	}
-
-	.series-head > span {
-		color: rgb(var(--muted));
-		font-size: 0.82rem;
-		font-weight: 700;
-		white-space: nowrap;
-	}
-
-	.chapters ol {
-		margin: 0;
-		padding: 0;
-		border-top: 1px solid rgba(var(--line), 0.9);
-		list-style: none;
-	}
-
-	.chapters li {
-		position: relative;
-		border-bottom: 1px solid rgba(var(--line), 0.9);
-	}
-
-	.chapters li a::before {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		width: 3px;
-		background: var(--accent-strong);
-		content: "";
-		opacity: 0;
-		transform: scaleY(0.4);
-		transition:
-			opacity 180ms ease,
-			transform 180ms ease;
-	}
-
-	.chapters li a {
-		position: relative;
-		display: grid;
-		grid-template-columns: 72px minmax(0, 1fr) 34px;
-		align-items: center;
-		padding: 1.65rem 1rem 1.65rem 0.9rem;
-		gap: 28px;
-		color: rgb(var(--ink));
-	}
-
-	.chapters li a:hover {
-		background: rgba(var(--soft), 0.78);
-	}
-
-	.chapters li a:hover::before {
-		opacity: 1;
-		transform: scaleY(1);
-	}
-
-	.chapter-number {
-		color: var(--accent-strong);
-		font-family: Georgia, serif;
-		font-size: 1.85rem;
-		font-weight: 500;
-		letter-spacing: -0.03em;
-	}
-
-	.chapter-copy {
-		min-width: 0;
-	}
-
-	.chapter-copy h3 {
-		margin-bottom: 0.38rem;
-		color: var(--heading);
-		font-size: 1.16rem;
-		font-weight: 780;
-		line-height: 1.4;
-	}
-
-	.chapters li a:hover h3 {
-		color: var(--accent-strong);
-	}
-
-	.chapter-copy > p {
-		margin: 0;
-		color: rgb(var(--muted));
-		font-size: 0.86rem;
-		line-height: 1.65;
-	}
-
-	.chapters li svg {
-		width: 24px;
-		height: 24px;
-		fill: none;
-		stroke: var(--accent-strong);
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 1.8;
-	}
-
-	.chapters li a:hover svg {
-		transform: translate(2px, -2px);
-	}
-
-	@media (max-width: 720px) {
-		.series-detail-shell {
-			width: min(100% - 24px, 1080px);
-		}
-
-		.series-head {
-			align-items: flex-start;
-			flex-direction: column;
-			gap: 14px;
-		}
-
-		.chapters li a {
-			grid-template-columns: 46px minmax(0, 1fr);
-			padding: 1.35rem 0.4rem;
-			gap: 13px;
-		}
-
-		.chapters li svg {
-			display: none;
-		}
-
-		.chapter-copy > p {
-			display: -webkit-box;
-			overflow: hidden;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
-		}
-
-		.chapter-number {
-			font-size: 1.35rem;
-		}
-	}
-</style>
+{
+	post && Content ? (
+		<BlogPost
+			{...post.data}
+			currentId={post.id}
+			headings={rendered?.headings ?? []}
+			readingMinutes={readingMinutes}
+			seriesReaderId={definition.id}
+		>
+			<Content />
+		</BlogPost>
+	) : (
+		<SeriesEmpty definition={definition} />
+	)
+}

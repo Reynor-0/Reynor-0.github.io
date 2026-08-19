@@ -1,0 +1,172 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { SeriesDefinition } from '../lib/series';
+import { getSeriesChapterTitle, getSeriesReaderPath } from '../lib/series';
+
+type Props = {
+	definition: SeriesDefinition;
+	posts: CollectionEntry<'blog'>[];
+	currentId?: string;
+};
+
+const { definition, posts, currentId } = Astro.props;
+const firstPostId = posts[0]?.id;
+---
+
+<aside class="series-sidebar" aria-label={`${definition.title}专栏目录`}>
+	<a class="all-series" href="/series/">
+		<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.5 5-5 5 5 5" /></svg>
+		<span>全部专栏</span>
+	</a>
+
+	<header>
+		<h2>{definition.title}</h2>
+		<p>{posts.length} 篇文章</p>
+	</header>
+
+	<nav aria-label={`${definition.title}文章列表`}>
+		<ol>
+			{
+				posts.map((post) => {
+					const active = post.id === currentId;
+					return (
+						<li>
+							<a
+								class:list={{ active }}
+								href={getSeriesReaderPath(definition.id, post.id, firstPostId)}
+								aria-current={active ? 'page' : undefined}
+							>
+								<span>{String(post.data.series?.order).padStart(2, '0')}</span>
+								<strong>{getSeriesChapterTitle(post)}</strong>
+							</a>
+						</li>
+					);
+				})
+			}
+		</ol>
+	</nav>
+</aside>
+
+<style>
+	.series-sidebar {
+		position: sticky;
+		top: 92px;
+		max-height: calc(100vh - 120px);
+		overflow-y: auto;
+		padding: 0 18px 16px 0;
+		border-right: 1px solid rgba(var(--line), 0.9);
+		scrollbar-width: thin;
+		scrollbar-color: rgba(var(--accent), 0.28) transparent;
+	}
+
+	.all-series {
+		display: inline-flex;
+		align-items: center;
+		margin-bottom: 1.15rem;
+		gap: 0.28rem;
+		color: rgb(var(--muted));
+		font-size: 0.76rem;
+		font-weight: 750;
+	}
+
+	.all-series:hover {
+		color: var(--accent-strong);
+		transform: translateX(-2px);
+	}
+
+	.all-series svg {
+		width: 16px;
+		height: 16px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.7;
+	}
+
+	header {
+		margin-bottom: 1rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid rgba(var(--line), 0.86);
+	}
+
+	header h2 {
+		margin: 0 0 0.3rem;
+		color: var(--heading);
+		font-family: Georgia, "Noto Serif SC", "Songti SC", serif;
+		font-size: 1.28rem;
+		line-height: 1.35;
+	}
+
+	header p {
+		margin: 0;
+		color: rgb(var(--muted));
+		font-size: 0.72rem;
+	}
+
+	ol {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li + li {
+		margin-top: 0.18rem;
+	}
+
+	li a {
+		position: relative;
+		display: grid;
+		grid-template-columns: 30px minmax(0, 1fr);
+		align-items: start;
+		padding: 0.72rem 0.7rem;
+		gap: 0.48rem;
+		border-radius: 7px;
+		color: rgb(var(--muted));
+	}
+
+	li a::before {
+		position: absolute;
+		top: 0.68rem;
+		bottom: 0.68rem;
+		left: 0;
+		width: 2px;
+		border-radius: 999px;
+		background: var(--accent-strong);
+		content: "";
+		opacity: 0;
+	}
+
+	li a:hover {
+		background: rgba(var(--soft), 0.72);
+		color: rgb(var(--ink));
+	}
+
+	li a.active {
+		background: var(--accent-soft);
+		color: var(--accent-strong);
+	}
+
+	li a.active::before {
+		opacity: 1;
+	}
+
+	li span {
+		padding-top: 0.08rem;
+		color: var(--accent-strong);
+		font-family: Georgia, serif;
+		font-size: 0.74rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+	}
+
+	li strong {
+		display: -webkit-box;
+		overflow: hidden;
+		font-size: 0.78rem;
+		font-weight: 700;
+		line-height: 1.5;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+</style>

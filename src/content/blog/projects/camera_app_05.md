@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（五）：DRM/KMS 资源探测'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从打开 DRM 设备到自动选择 connector/CRTC/mode 的只读探测'
-category: '项目'
 series: { id: 'camera-development', order: 5 }
 tags: ['Camera', 'Linux', 'V4L2', 'DRM/KMS', '图像处理']
 pubDate: 'Jun 20 2026'

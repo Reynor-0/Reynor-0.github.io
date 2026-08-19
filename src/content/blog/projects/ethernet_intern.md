@@ -1,7 +1,6 @@
 ---
 title: '实习期间Ethernet项目总结'
 description: '分析整理实习期间进行的功能开发，有关Ethernet中的PHY/Switch驱动开发'
-category: '项目'
 tags: ['Ethernet', 'PHY', 'Switch', 'TC10', '低功耗']
 pubDate: 'Aug 12 2026'
 ---

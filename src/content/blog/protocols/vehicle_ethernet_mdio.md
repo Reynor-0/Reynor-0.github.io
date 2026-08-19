@@ -1,7 +1,6 @@
 ---
 title: '车载以太网（二）：MDIO 与 Clause 22/45'
 description: '理解 MDC/MDIO 管理总线、Clause 22 与 Clause 45 寄存器访问，并结合 AURIX GETH 梳理 PHY 管理路径。'
-category: '协议'
 series: { id: 'vehicle-ethernet', order: 2 }
 tags: ['Ethernet', 'MDIO', 'Clause 22', 'Clause 45', 'PHY']
 pubDate: 'Jun 08 2026'

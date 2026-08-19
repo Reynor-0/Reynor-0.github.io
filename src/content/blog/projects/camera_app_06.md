@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（六）：DRM Master 与彩条 Modeset'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从申请 DRM master 到 dumb buffer 彩条显示与安全恢复'
-category: '项目'
 series: { id: 'camera-development', order: 6 }
 tags: ['Camera', 'Linux', 'V4L2', 'ISP', '图像处理']
 pubDate: 'Jun 21 2026'

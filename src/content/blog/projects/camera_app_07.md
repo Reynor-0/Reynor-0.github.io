@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（七）：DRM Page Flip 与离线 RGA 验证'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从双缓冲翻页到 NV12 经 RGA 旋转写入 DRM framebuffer'
-category: '项目'
 series: { id: 'camera-development', order: 7 }
 tags: ['Camera', 'Linux', 'V4L2', 'RGA', '图像处理']
 pubDate: 'Jun 22 2026'

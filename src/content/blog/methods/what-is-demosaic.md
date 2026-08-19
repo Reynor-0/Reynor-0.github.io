@@ -1,7 +1,6 @@
 ---
 title: '什么是 Demosaic：从 Bayer RAW 到 RGB'
 description: '介绍 Bayer 阵列、颜色插值和 Demosaic 的基本原理。'
-category: '方法'
 series: { id: 'demosaic', order: 1 }
 tags: ['Demosaic', 'Bayer', '图像处理']
 pubDate: 'Jun 25 2026'

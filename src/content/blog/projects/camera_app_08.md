@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（八）：真实摄像头单帧与连续双缓冲显示'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，第一次让真实摄像头数据流过 V4L2→RGA→DRM 完整链路'
-category: '项目'
 series: { id: 'camera-development', order: 8 }
 tags: ['Camera', 'Linux', 'V4L2', 'ISP', '图像处理']
 pubDate: 'Jun 23 2026'

@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { CATEGORY_ORDER } from '../lib/blog';
-import { SERIES_DEFINITIONS, getSeriesPosts } from '../lib/series';
+import { getBlogCategories, getPostCategoryId } from '../lib/blog';
+import { getSeriesDefinitions, getSeriesPosts } from '../lib/series';
 
 type Props = {
 	posts: CollectionEntry<'blog'>[];
@@ -10,16 +10,19 @@ type Props = {
 };
 
 const { posts, currentId, overviewActive = false } = Astro.props;
-const groups = CATEGORY_ORDER
+const categories = await getBlogCategories(posts);
+const seriesDefinitions = await getSeriesDefinitions(posts);
+const groups = categories
 	.map((category) => {
-		const series = SERIES_DEFINITIONS.filter((definition) => definition.category === category)
-			.map((definition) => ({
-				definition,
-				posts: getSeriesPosts(posts, definition.id),
-			}))
-			.filter((item) => item.posts.length > 0);
+		const series = seriesDefinitions
+			.map((definition) => ({ definition, posts: getSeriesPosts(posts, definition.id) }))
+			.filter(({ definition, posts: seriesPosts }) => {
+				const categoryId =
+					definition.category ?? (seriesPosts[0] ? getPostCategoryId(seriesPosts[0]) : undefined);
+				return categoryId === category.id;
+			});
 		const standalonePosts = posts.filter(
-			(post) => post.data.category === category && post.data.series === undefined,
+			(post) => getPostCategoryId(post) === category.id && post.data.series === undefined,
 		);
 
 		return {
@@ -28,8 +31,7 @@ const groups = CATEGORY_ORDER
 			series,
 			count: standalonePosts.length + series.reduce((total, item) => total + item.posts.length, 0),
 		};
-	})
-	.filter((group) => group.count > 0);
+	});
 ---
 
 <aside class="blog-sidebar" aria-label="文章分类导航" data-blog-sidebar>
@@ -56,7 +58,7 @@ const groups = CATEGORY_ORDER
 					<details class="category-group" open={containsCurrent}>
 						<summary>
 							<span class="category-mark" aria-hidden="true" />
-							<strong>{group.category}</strong>
+							<strong>{group.category.title}</strong>
 							<small>{group.count}</small>
 							<svg viewBox="0 0 20 20" aria-hidden="true">
 								<path d="m6.5 8 3.5 3.5L13.5 8" />

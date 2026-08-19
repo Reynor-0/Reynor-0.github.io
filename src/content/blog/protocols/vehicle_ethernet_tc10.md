@@ -1,7 +1,6 @@
 ---
 title: '车载以太网（四）：TC10 休眠与唤醒'
 description: '理解 TC10 的低功耗目标、LPS 休眠握手、WUR/WUP 唤醒机制，以及它们在车规 PHY 驱动中的实现。'
-category: '协议'
 series: { id: 'vehicle-ethernet', order: 4 }
 tags: ['Ethernet', 'TC10', 'PHY', '低功耗', '唤醒']
 pubDate: 'Jun 08 2026'

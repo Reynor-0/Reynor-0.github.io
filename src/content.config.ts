@@ -1,5 +1,5 @@
 import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const blog = defineCollection({
@@ -25,16 +25,11 @@ const blog = defineCollection({
 		z.object({
 			title: z.string(),
 			description: z.string(),
-			category: z.enum(['驱动', '协议', '操作系统', '架构', '方法', '项目']),
+			// Category membership comes only from the first folder below
+			// src/content/blog; the folder's _category.json controls its UI text.
 			series: z
 				.object({
-					id: z.enum([
-						'vehicle-ethernet',
-						'camera-development',
-						'linux-camera',
-						'uds-diagnostics',
-						'demosaic',
-					]),
+					id: z.string().regex(/^[a-z0-9_-]+$/),
 					order: z.number().int().positive(),
 				})
 				.optional(),
@@ -46,4 +41,29 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const blogCategories = defineCollection({
+	loader: glob({
+		base: './src/content/blog',
+		pattern: '*/_category.json',
+		generateId: ({ entry }) => entry.replaceAll('\\', '/').split('/')[0],
+	}),
+	schema: z.object({
+		title: z.string().min(1),
+		description: z.string().default(''),
+		order: z.number().int().default(100),
+		homeSection: z.boolean().default(false),
+	}),
+});
+
+const series = defineCollection({
+	loader: file('./src/content/series.json'),
+	schema: z.object({
+		id: z.string().regex(/^[a-z0-9_-]+$/),
+		title: z.string().min(1),
+		description: z.string().default(''),
+		category: z.string().regex(/^[a-z0-9_-]+$/),
+		order: z.number().int().default(100),
+	}),
+});
+
+export const collections = { blog, blogCategories, series };

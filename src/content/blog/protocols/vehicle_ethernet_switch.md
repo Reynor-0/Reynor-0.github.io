@@ -1,7 +1,6 @@
 ---
 title: '车载以太网（五）：Switch 硬件转发模型'
 description: '从嵌入式软件开发的角度理解车载以太网 Switch、VLAN、ATU、FID、端口配置与硬件转发。'
-category: '协议'
 series: { id: 'vehicle-ethernet', order: 5 }
 tags: ['Ethernet', 'Switch', 'VLAN', 'ATU', '汽车电子']
 pubDate: 'Jun 08 2026'

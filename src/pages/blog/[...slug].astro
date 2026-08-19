@@ -1,6 +1,7 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
+import { estimateReadingMinutes } from '../../lib/blog';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -14,9 +15,7 @@ type Props = CollectionEntry<'blog'>;
 const post = Astro.props;
 const { Content, headings } = await render(post);
 const rawBody = 'body' in post && typeof post.body === 'string' ? post.body : '';
-const chineseCharacters = rawBody.match(/[\u3400-\u9fff]/g)?.length ?? 0;
-const latinWords = rawBody.match(/[A-Za-z0-9_]+/g)?.length ?? 0;
-const readingMinutes = Math.max(1, Math.ceil(chineseCharacters / 400 + latinWords / 220));
+const readingMinutes = estimateReadingMinutes(rawBody);
 ---
 
 <BlogPost {...post.data} currentId={post.id} headings={headings} readingMinutes={readingMinutes}>

@@ -1,0 +1,139 @@
+---
+import BaseHead from './BaseHead.astro';
+import Footer from './Footer.astro';
+import Header from './Header.astro';
+import SeriesSidebar from './SeriesSidebar.astro';
+import type { SeriesDefinition } from '../lib/series';
+
+type Props = {
+	definition: SeriesDefinition;
+};
+
+const { definition } = Astro.props;
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={definition.title} description={definition.description || `${definition.title}专栏`} />
+	</head>
+	<body>
+		<Header />
+		<main class="empty-series-shell">
+			<SeriesSidebar definition={definition} posts={[]} />
+			<article>
+				<a class="series-context" href="/series/">
+					<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m11.5 5-5 5 5 5" /></svg>
+					全部专栏
+				</a>
+				<header>
+					<h1>{definition.title}</h1>
+					{definition.description && <p>{definition.description}</p>}
+				</header>
+				<section class="empty-state">
+					<h2>专栏已经建立</h2>
+					<p>添加第一篇带有该专栏 ID 的文章后，正文和左侧章节目录会自动出现在这里。</p>
+				</section>
+			</article>
+			<aside class="empty-toc" aria-label="文章目录">
+				<h2>目录</h2>
+				<p>暂无文章</p>
+			</aside>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.empty-series-shell {
+		display: grid;
+		grid-template-columns: 260px minmax(0, 1fr) 210px;
+		align-items: start;
+		width: min(100% - 48px, 1500px);
+		gap: 32px;
+	}
+
+	article {
+		min-width: 0;
+	}
+
+	.series-context {
+		display: inline-flex;
+		align-items: center;
+		margin-bottom: 1.25rem;
+		gap: 0.3rem;
+		color: var(--accent-strong);
+		font-size: 0.82rem;
+		font-weight: 750;
+	}
+
+	.series-context svg {
+		width: 16px;
+		height: 16px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.7;
+	}
+
+	header {
+		padding-bottom: 32px;
+		border-bottom: 1px solid rgba(var(--line), 0.92);
+	}
+
+	header h1 {
+		margin-bottom: 1rem;
+		color: var(--heading);
+		font-size: clamp(2.2rem, 3.3vw, 2.8rem);
+	}
+
+	header p,
+	.empty-state p,
+	.empty-toc p {
+		color: rgb(var(--muted));
+	}
+
+	.empty-state {
+		margin-top: 38px;
+		padding: 2rem 0;
+		border-top: 1px solid rgba(var(--line), 0.76);
+		border-bottom: 1px solid rgba(var(--line), 0.76);
+	}
+
+	.empty-state h2 {
+		margin-bottom: 0.65rem;
+		font-size: 1.45rem;
+	}
+
+	.empty-state p {
+		max-width: 620px;
+		margin: 0;
+	}
+
+	.empty-toc {
+		position: sticky;
+		top: 92px;
+		padding-left: 18px;
+		border-left: 1px solid rgba(var(--line), 0.95);
+	}
+
+	.empty-toc h2 {
+		margin-bottom: 0.65rem;
+		font-size: 0.98rem;
+	}
+
+	.empty-toc p {
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 1260px) {
+		.empty-series-shell {
+			grid-template-columns: 230px minmax(0, 1fr);
+			width: min(100% - 40px, 1120px);
+		}
+
+		.empty-toc {
+			display: none;
+		}
+	}
+</style>

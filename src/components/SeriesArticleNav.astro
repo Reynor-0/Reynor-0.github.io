@@ -1,14 +1,21 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { getSeriesContext } from '../lib/series';
+import { getSeriesContext, getSeriesDefinitions, getSeriesReaderPath } from '../lib/series';
 
 type Props = {
 	posts: CollectionEntry<'blog'>[];
 	currentId?: string;
+	readerSeriesId?: string;
 };
 
-const { posts, currentId } = Astro.props;
-const context = getSeriesContext(posts, currentId);
+const { posts, currentId, readerSeriesId } = Astro.props;
+const definitions = await getSeriesDefinitions(posts);
+const context = getSeriesContext(posts, currentId, definitions);
+const firstPostId = context?.posts[0]?.id;
+const chapterHref = (postId: string) =>
+	readerSeriesId
+		? getSeriesReaderPath(readerSeriesId, postId, firstPostId)
+		: `/blog/${postId}/`;
 ---
 
 {
@@ -25,7 +32,7 @@ const context = getSeriesContext(posts, currentId);
 			</header>
 			<div class="series-pager">
 				{context.previous && (
-					<a class="chapter-link previous" href={`/blog/${context.previous.id}/`}>
+					<a class="chapter-link previous" href={chapterHref(context.previous.id)}>
 						<svg viewBox="0 0 24 24" aria-hidden="true">
 							<path d="m14.5 6-6 6 6 6" />
 						</svg>
@@ -35,9 +42,11 @@ const context = getSeriesContext(posts, currentId);
 						</span>
 					</a>
 				)}
-				<a class="series-index-link" href={`/series/${context.definition.id}/`}>查看完整目录</a>
+				<a class="series-index-link" href={readerSeriesId ? '/series/' : `/series/${context.definition.id}/`}>
+					{readerSeriesId ? '全部专栏' : '进入专栏阅读'}
+				</a>
 				{context.next && (
-					<a class="chapter-link next" href={`/blog/${context.next.id}/`}>
+					<a class="chapter-link next" href={chapterHref(context.next.id)}>
 						<span>
 							<small>下一篇</small>
 							<strong>{context.next.data.title}</strong>

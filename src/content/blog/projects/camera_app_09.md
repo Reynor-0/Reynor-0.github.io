@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（九）：Worker 长期运行与确定性退出'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从定时测试 demo 改造成可长期运行、有状态机和稳定退出码的 worker'
-category: '项目'
 series: { id: 'camera-development', order: 9 }
 tags: ['Camera', 'Linux', 'V4L2', 'DRM', '图像处理']
 pubDate: 'Jun 24 2026'

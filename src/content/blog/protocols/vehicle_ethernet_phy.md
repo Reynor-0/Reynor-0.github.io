@@ -1,7 +1,6 @@
 ---
 title: '车载以太网（三）：100/1000BASE-T1 PHY、Master/Slave 与 SQI'
 description: '梳理车载以太网 PHY 的启动与建链流程、Master/Slave 时钟关系、SQI 诊断及其驱动实现。'
-category: '协议'
 series: { id: 'vehicle-ethernet', order: 3 }
 tags: ['Ethernet', '100BASE-T1', '1000BASE-T1', 'PHY', 'SQI']
 pubDate: 'Jun 08 2026'

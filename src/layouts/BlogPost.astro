@@ -7,8 +7,14 @@ import FormattedDate from '../components/FormattedDate.astro';
 import GiscusComments from '../components/GiscusComments.astro';
 import Header from '../components/Header.astro';
 import SeriesArticleNav from '../components/SeriesArticleNav.astro';
-import { tagSlug } from '../lib/blog';
-import { getSeriesContext } from '../lib/series';
+import SeriesSidebar from '../components/SeriesSidebar.astro';
+import { getBlogCategories, getPostCategory, tagSlug } from '../lib/blog';
+import {
+	getSeriesContext,
+	getSeriesDefinition,
+	getSeriesDefinitions,
+	getSeriesPosts,
+} from '../lib/series';
 
 type Heading = {
 	depth: number;
@@ -20,12 +26,12 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	currentId?: string;
 	headings?: Heading[];
 	readingMinutes?: number;
+	seriesReaderId?: string;
 };
 
 const {
 	title,
 	description,
-	category,
 	tags,
 	pubDate,
 	updatedDate,
@@ -33,33 +39,59 @@ const {
 	currentId,
 	headings = [],
 	readingMinutes = 1,
+	seriesReaderId,
 } = Astro.props;
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-const seriesContext = getSeriesContext(posts, currentId);
+const categories = await getBlogCategories(posts);
+const seriesDefinitions = await getSeriesDefinitions(posts);
+const seriesContext = getSeriesContext(posts, currentId, seriesDefinitions);
+const readerDefinition = getSeriesDefinition(seriesDefinitions, seriesReaderId);
+const readerPosts = readerDefinition ? getSeriesPosts(posts, readerDefinition.id) : [];
+const isSeriesReader = Boolean(readerDefinition && readerPosts.some((post) => post.id === currentId));
 const currentPost = posts.find((post) => post.id === currentId);
+const currentCategory = currentPost ? getPostCategory(currentPost, categories) : undefined;
 const seriesOrder = currentPost?.data.series?.order;
 const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 ---
 
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={title} description={description} image={heroImage} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={heroImage}
+			canonicalPath={isSeriesReader && currentId ? `/blog/${currentId}/` : undefined}
+		/>
 	</head>
 	<body>
 		<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
 		<Header />
 		<main class="docs-shell">
 			<div class="desktop-sidebar">
-				<BlogSidebar posts={posts} currentId={currentId} />
+				{
+					isSeriesReader && readerDefinition ? (
+						<SeriesSidebar definition={readerDefinition} posts={readerPosts} currentId={currentId} />
+					) : (
+						<BlogSidebar posts={posts} currentId={currentId} />
+					)
+				}
 			</div>
 
 			<article class="content">
 				<div class="mobile-doc-navigation">
 					<details>
 						<summary>文章导航</summary>
-						<div><BlogSidebar posts={posts} currentId={currentId} /></div>
+						<div>
+							{
+								isSeriesReader && readerDefinition ? (
+									<SeriesSidebar definition={readerDefinition} posts={readerPosts} currentId={currentId} />
+								) : (
+									<BlogSidebar posts={posts} currentId={currentId} />
+								)
+							}
+						</div>
 					</details>
 					{
 						visibleHeadings.length > 0 && (
@@ -78,10 +110,10 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 				</div>
 				<a
 					class="post-context"
-					href={seriesContext ? `/series/${seriesContext.definition.id}/` : '/blog'}
+					href={isSeriesReader ? '/series/' : seriesContext ? `/series/${seriesContext.definition.id}/` : '/blog'}
 				>
 					<span aria-hidden="true">←</span>
-					{seriesContext ? seriesContext.definition.title : category}
+					{seriesContext ? seriesContext.definition.title : currentCategory?.title ?? '文章'}
 					{seriesOrder && <small>· {String(seriesOrder).padStart(2, '0')}</small>}
 				</a>
 				<header class="post-head">
@@ -101,7 +133,7 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 					</div>
 					{updatedDate && <p>更新于 <FormattedDate date={updatedDate} /></p>}
 				</footer>
-				<SeriesArticleNav posts={posts} currentId={currentId} />
+				<SeriesArticleNav posts={posts} currentId={currentId} readerSeriesId={seriesReaderId} />
 				<GiscusComments />
 			</article>
 

@@ -1,7 +1,6 @@
 ---
 title: 'UDS 诊断协议：从报文格式到刷写流程'
 description: '从客户端/服务器模型、SID 与 NRC、诊断会话和定时参数出发，梳理 UDS on CAN、常用诊断服务及 ECU 刷写流程。'
-category: '协议'
 series: { id: 'uds-diagnostics', order: 1 }
 tags: ['UDS', 'ISO 14229', 'ISO-TP', 'CAN', '汽车诊断']
 pubDate: 'Aug 11 2026'

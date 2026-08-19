@@ -8,13 +8,17 @@ import Header from '../components/Header.astro';
 import HeroDesktop from '../assets/home-meadow-oil-desktop.png';
 import HeroMobile from '../assets/home-meadow-oil-mobile.png';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
-import { tagSlug } from '../lib/blog';
+import { getBlogCategories, getPostCategoryId, tagSlug } from '../lib/blog';
 
 const allPosts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 const recentPosts = allPosts.slice(0, 5);
-const projectPosts = allPosts.filter((post) => post.data.category === '项目').slice(0, 3);
+const categories = await getBlogCategories(allPosts);
+const homeCategory = categories.find((category) => category.homeSection);
+const projectPosts = homeCategory
+	? allPosts.filter((post) => getPostCategoryId(post) === homeCategory.id).slice(0, 3)
+	: [];
 const tagCounts = new Map<string, number>();
 allPosts.forEach((post) => {
 	post.data.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1));

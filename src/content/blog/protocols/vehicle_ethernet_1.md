@@ -1,7 +1,6 @@
 ---
 title: '车载以太网（一）：以太网帧与 VLAN'
 description: '从 Ethernet II 帧、802.1Q、Q-in-Q 到 lwIP VLAN 收发路径，建立车载以太网二层帧与 VLAN 基础。'
-category: '协议'
 series: { id: 'vehicle-ethernet', order: 1 }
 tags: ['Ethernet', 'VLAN', 'lwIP', '汽车电子']
 pubDate: 'Jun 08 2026'

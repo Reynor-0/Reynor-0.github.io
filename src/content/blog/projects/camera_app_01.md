@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（一）：V4L2 设备探测与格式协商'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从设备能力探测到图像格式协商'
-category: '项目'
 series: { id: 'camera-development', order: 1 }
 tags: ['Camera', 'Linux', 'V4L2', 'ISP', '图像处理']
 pubDate: 'Jun 16 2026'

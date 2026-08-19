@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（四）：RK3568 硬件拓扑与显示链路设计'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，在写显示代码之前先把板级硬件和软件对象的边界理清楚'
-category: '项目'
 series: { id: 'camera-development', order: 4 }
 tags: ['Camera', 'Linux', 'V4L2', 'RGA', '图像处理']
 pubDate: 'Jun 19 2026'

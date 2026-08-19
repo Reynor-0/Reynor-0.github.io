@@ -1,0 +1,39 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+import { estimateReadingMinutes } from '../../../lib/blog';
+import { getSeriesDefinitions, getSeriesPosts, type SeriesDefinition } from '../../../lib/series';
+
+type Props = {
+	definition: SeriesDefinition;
+	post: CollectionEntry<'blog'>;
+};
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	const definitions = await getSeriesDefinitions(posts);
+
+	return definitions.flatMap((definition) => {
+		const [, ...remainingPosts] = getSeriesPosts(posts, definition.id);
+		return remainingPosts.map((post) => ({
+			params: { slug: definition.id, article: post.id },
+			props: { definition, post },
+		}));
+	});
+}
+
+const { definition, post } = Astro.props;
+const { Content, headings } = await render(post);
+const rawBody = 'body' in post && typeof post.body === 'string' ? post.body : '';
+const readingMinutes = estimateReadingMinutes(rawBody);
+---
+
+<BlogPost
+	{...post.data}
+	currentId={post.id}
+	headings={headings}
+	readingMinutes={readingMinutes}
+	seriesReaderId={definition.id}
+>
+	<Content />
+</BlogPost>

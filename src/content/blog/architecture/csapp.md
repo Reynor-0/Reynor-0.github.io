@@ -1,7 +1,6 @@
 ---
 title: 'Computer Systems: A Programmer’s Perspective'
 description: '系统基础长期阅读记录。'
-category: '架构'
 tags: ['CSAPP', '计算机系统', '内存']
 pubDate: 'Jun 16 2026'
 ---

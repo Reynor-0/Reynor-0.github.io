@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（三）：VIDIOC_EXPBUF 与 DMA-BUF 导出'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，把 MMAP buffer 导出为可跨设备共享的 DMA-BUF fd'
-category: '项目'
 series: { id: 'camera-development', order: 3 }
 tags: ['Camera', 'Linux', 'V4L2', 'DMA-BUF', '图像处理']
 pubDate: 'Jun 18 2026'

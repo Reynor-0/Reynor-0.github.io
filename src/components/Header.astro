@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import { getSeriesDefinition } from '../lib/series';
+import { getBlogCategories, getPostCategory } from '../lib/blog';
+import { getSeriesDefinition, getSeriesDefinitions } from '../lib/series';
 import HeaderLink from './HeaderLink.astro';
 
 interface Props {
@@ -11,6 +12,8 @@ const { overlay = false } = Astro.props;
 const searchPosts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const searchCategories = await getBlogCategories(searchPosts);
+const searchSeries = await getSeriesDefinitions(searchPosts);
 ---
 
 <header class:list={['site-header', { overlay }]} data-site-header data-overlay={overlay ? 'true' : undefined}>
@@ -88,8 +91,8 @@ const searchPosts = (await getCollection('blog')).sort(
 								data-search-text={[
 									post.data.title,
 									post.data.description,
-									post.data.category,
-									getSeriesDefinition(post.data.series?.id)?.title ?? '',
+									getPostCategory(post, searchCategories).title,
+									getSeriesDefinition(searchSeries, post.data.series?.id)?.title ?? '',
 									...post.data.tags,
 								].join(' ').toLocaleLowerCase('zh-CN')}
 								hidden

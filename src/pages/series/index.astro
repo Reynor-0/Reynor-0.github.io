@@ -3,14 +3,15 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
-import { SERIES_DEFINITIONS, getSeriesPosts } from '../../lib/series';
+import { getSeriesDefinitions, getSeriesPosts } from '../../lib/series';
 import { SITE_TITLE } from '../../consts';
 
 const posts = await getCollection('blog');
-const seriesItems = SERIES_DEFINITIONS.map((definition) => ({
+const definitions = await getSeriesDefinitions(posts);
+const seriesItems = definitions.map((definition) => ({
 	definition,
 	posts: getSeriesPosts(posts, definition.id),
-})).filter((series) => series.posts.length > 0);
+}));
 ---
 
 <!doctype html>

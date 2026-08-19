@@ -5,10 +5,14 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_TITLE } from '../consts';
+import { getBlogCategories, getPostCategory } from '../lib/blog';
+import { getSeriesDefinition, getSeriesDefinitions } from '../lib/series';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+const categories = await getBlogCategories(posts);
+const seriesDefinitions = await getSeriesDefinitions(posts);
 ---
 
 <!doctype html>
@@ -58,7 +62,8 @@ const posts = (await getCollection('blog')).sort(
 								data-search={[
 									post.data.title,
 									post.data.description,
-									post.data.category,
+									getPostCategory(post, categories).title,
+									getSeriesDefinition(seriesDefinitions, post.data.series?.id)?.title ?? '',
 									...post.data.tags,
 								].join(' ').toLocaleLowerCase('zh-CN')}
 							>

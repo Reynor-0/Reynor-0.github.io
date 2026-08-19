@@ -1,7 +1,6 @@
 ---
 title: 'Camera 开发（二）：V4L2 MMAP 连续采集与 Buffer Queue'
 description: '基于 RK3568 的 V4L2 Camera 应用开发记录，从 Buffer 申请到连续帧采集与安全退出'
-category: '项目'
 series: { id: 'camera-development', order: 2 }
 tags: ['Camera', 'Linux', 'V4L2', '图像处理']
 pubDate: 'Jun 17 2026'
