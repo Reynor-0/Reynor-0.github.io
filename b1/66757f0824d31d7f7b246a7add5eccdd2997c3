@@ -1,0 +1,93 @@
+src/pages/series/[slug]/[article].astro
+  s_02e6d8d3e1d668::t_c684fce1a68430 1-4,6-13,15,17-39
+  s_02e6d8d3e1d668::t_22b2ec2e13a3c5 5,14,16
+src/content.config.ts
+  s_02e6d8d3e1d668::t_54e15d0edcce2a 28-29,64
+  s_02e6d8d3e1d668::t_c22dcbae18e5e7 2,59,61
+  s_02e6d8d3e1d668::t_84d3d2406ad857 32,44-58,60,62-63,65-69
+src/pages/search.astro
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 8-9,14-15,65-66
+src/content/blog/methods/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-5
+src/components/BaseHead.astro
+  s_02e6d8d3e1d668::t_329155d9beb125 14,17-18,65,72
+src/pages/blog/[...slug].astro
+  s_02e6d8d3e1d668::t_329155d9beb125 4,18
+src/components/SeriesSidebar.astro
+  s_02e6d8d3e1d668::t_329155d9beb125 1-172
+src/content/blog/protocols/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-5
+src/lib/series.ts
+  s_02e6d8d3e1d668::t_b49b39989e1221 1,6-9,11-27,42-53,74-75,79-82,86-89,95
+  s_02e6d8d3e1d668::t_54e15d0edcce2a 2,10,28-29,31-38,40-41
+  s_02e6d8d3e1d668::t_c22dcbae18e5e7 30,39
+  s_02e6d8d3e1d668::t_329155d9beb125 76-78,83-84
+src/content/blog/operating-systems/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-5
+src/pages/series/index.astro
+  s_02e6d8d3e1d668::t_22b2ec2e13a3c5 6,10-11,14
+src/content/blog/methods/essay.md
+  h_e5e187dd8d54e6 5,283-349
+src/components/SeriesEmpty.astro
+  s_02e6d8d3e1d668::t_22b2ec2e13a3c5 1-139
+src/layouts/BlogPost.astro
+  s_02e6d8d3e1d668::t_7b111af9feba2d 10,29,42,51-52,61-66,73-79,86-94,113,136
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 11-17,47-50,54
+  s_02e6d8d3e1d668::t_54e15d0edcce2a 116
+src/content/blog/architecture/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-5
+src/content/README.md
+  s_02e6d8d3e1d668::t_1f8094f1003f2a 1-2,4-32,36-45,47-49,51-52,54-55,57-58,68-71,73-74,76-85,87,89,98-103,105
+  s_02e6d8d3e1d668::t_adb4713ef641c1 35,46,75,90-94,96-97
+  s_02e6d8d3e1d668::t_2e18059a7fdbc6 33-34
+  s_02e6d8d3e1d668::t_7b9230e4cd0332 3,50,53,56,59-67,72,86,88,95,104
+src/components/Header.astro
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 3-4,15-16,94-95
+src/lib/blog.ts
+  s_02e6d8d3e1d668::t_329155d9beb125 71-72
+  s_02e6d8d3e1d668::t_54e15d0edcce2a 35-39,59-65
+  s_02e6d8d3e1d668::t_b49b39989e1221 1-34,40-58,66,69,73-77
+src/components/BlogSidebar.astro
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 3-4,13-15,17-19,22-23,25,61
+  s_02e6d8d3e1d668::t_29dcd37f9a63c7 34
+  s_02e6d8d3e1d668::t_cff81780adf70d 20-21
+src/components/SeriesArticleNav.astro
+  s_02e6d8d3e1d668::t_7b111af9feba2d 8,11,14-18,35,45-47,49
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 3,12-13
+src/pages/series/[slug].astro
+  s_02e6d8d3e1d668::t_22b2ec2e13a3c5 3,6,10,15,17,21,27-29,33-47
+  s_02e6d8d3e1d668::t_c684fce1a68430 2,4-5,16,26,30
+src/content/blog/projects/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-6
+src/content/series.json
+  s_02e6d8d3e1d668::t_c22dcbae18e5e7 1-44
+src/content/blog/projects/camera_app_10.md
+  h_e5e187dd8d54e6 1-291
+src/content/blog/projects/camera_app_11.md
+  h_e5e187dd8d54e6 1-381
+src/pages/index.astro
+  s_02e6d8d3e1d668::t_6afc63b3b0572e 11,17-21
+src/content/blog/drivers/_category.json
+  s_02e6d8d3e1d668::t_84d3d2406ad857 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "b166757f0824d31d7f7b246a7add5eccdd2997c3",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_02e6d8d3e1d668": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fefb6-a4c6-75b0-8f18-634cfb8ef437",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
