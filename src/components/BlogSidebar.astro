@@ -1,7 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getBlogCategories, getPostCategoryId } from '../lib/blog';
-import { getSeriesDefinitions, getSeriesPosts } from '../lib/series';
 
 type Props = {
 	posts: CollectionEntry<'blog'>[];
@@ -11,25 +10,14 @@ type Props = {
 
 const { posts, currentId, overviewActive = false } = Astro.props;
 const categories = await getBlogCategories(posts);
-const seriesDefinitions = await getSeriesDefinitions(posts);
 const groups = categories
 	.map((category) => {
-		const series = seriesDefinitions
-			.map((definition) => ({ definition, posts: getSeriesPosts(posts, definition.id) }))
-			.filter(({ definition, posts: seriesPosts }) => {
-				const categoryId =
-					definition.category ?? (seriesPosts[0] ? getPostCategoryId(seriesPosts[0]) : undefined);
-				return categoryId === category.id;
-			});
-		const standalonePosts = posts.filter(
-			(post) => getPostCategoryId(post) === category.id && post.data.series === undefined,
-		);
+		const categoryPosts = posts.filter((post) => getPostCategoryId(post) === category.id);
 
 		return {
 			category,
-			standalonePosts,
-			series,
-			count: standalonePosts.length + series.reduce((total, item) => total + item.posts.length, 0),
+			posts: categoryPosts,
+			count: categoryPosts.length,
 		};
 	});
 ---
@@ -50,9 +38,7 @@ const groups = categories
 	<nav aria-label="按主题浏览文章">
 		{
 			groups.map((group) => {
-				const containsCurrent =
-					group.standalonePosts.some((post) => post.id === currentId) ||
-					group.series.some((series) => series.posts.some((post) => post.id === currentId));
+				const containsCurrent = group.posts.some((post) => post.id === currentId);
 
 				return (
 					<details class="category-group" open={containsCurrent}>
@@ -65,42 +51,7 @@ const groups = categories
 							</svg>
 						</summary>
 						<div class="article-links">
-							{group.series.map((series) => {
-								const seriesActive = series.posts.some((post) => post.id === currentId);
-								return (
-									<details class="series-group" open={seriesActive}>
-										<summary>
-											<span class="series-mark" aria-hidden="true">
-												<svg viewBox="0 0 18 18">
-													<path d="M3.5 3.5h8A2 2 0 0 1 13.5 5v9H5.5a2 2 0 0 1-2-2V3.5Z" />
-													<path d="M5.5 11.5h8" />
-												</svg>
-											</span>
-											<strong>{series.definition.title}</strong>
-											<small>{series.posts.length}</small>
-											<svg class="series-chevron" viewBox="0 0 20 20" aria-hidden="true">
-												<path d="m6.5 8 3.5 3.5L13.5 8" />
-											</svg>
-										</summary>
-										<div class="series-links">
-											<a class="series-overview" href={`/series/${series.definition.id}/`}>
-												<span>专栏目录</span>
-											</a>
-											{series.posts.map((post) => (
-												<a
-													class:list={{ active: post.id === currentId }}
-													href={`/blog/${post.id}/`}
-													aria-current={post.id === currentId ? 'page' : undefined}
-												>
-													<b>{String(post.data.series?.order).padStart(2, '0')}</b>
-													<span>{post.data.title}</span>
-												</a>
-											))}
-										</div>
-									</details>
-								);
-							})}
-							{group.standalonePosts.map((post) => (
+							{group.posts.map((post) => (
 								<a
 									class:list={{ active: post.id === currentId }}
 									href={`/blog/${post.id}/`}
@@ -238,8 +189,7 @@ const groups = categories
 		user-select: none;
 	}
 
-	.category-group > summary::-webkit-details-marker,
-	.series-group > summary::-webkit-details-marker {
+	.category-group > summary::-webkit-details-marker {
 		display: none;
 	}
 
@@ -248,8 +198,7 @@ const groups = categories
 		color: var(--heading);
 	}
 
-	.category-group > summary:focus-visible,
-	.series-group > summary:focus-visible {
+	.category-group > summary:focus-visible {
 		outline: 3px solid rgba(120, 151, 127, 0.32);
 		outline-offset: 1px;
 	}
@@ -352,111 +301,6 @@ const groups = categories
 		line-height: 1.42;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 2;
-	}
-
-	.series-group {
-		margin: 2px 0 4px -4px;
-		border-left: 1px solid rgba(var(--line), 0.88);
-	}
-
-	.series-group > summary {
-		display: grid;
-		grid-template-columns: 21px minmax(0, 1fr) auto 15px;
-		align-items: center;
-		min-height: 42px;
-		padding: 0 0.46rem;
-		gap: 7px;
-		border-radius: 8px;
-		color: var(--heading-soft);
-		cursor: pointer;
-		list-style: none;
-		user-select: none;
-	}
-
-	.series-group > summary:hover,
-	.series-group[open] > summary {
-		background: rgba(var(--soft), 0.92);
-		color: var(--heading);
-	}
-
-	.series-group > summary strong {
-		min-width: 0;
-		overflow: hidden;
-		font-size: 0.8rem;
-		font-weight: 800;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.series-mark {
-		display: grid;
-		width: 20px;
-		height: 20px;
-		place-items: center;
-		border-radius: 6px;
-		background: var(--accent-soft);
-		color: var(--accent-strong);
-	}
-
-	.series-mark svg {
-		width: 13px;
-		height: 13px;
-		fill: none;
-		stroke: currentColor;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 1.5;
-	}
-
-	.series-chevron {
-		width: 15px;
-		height: 15px;
-		fill: none;
-		stroke: currentColor;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 1.7;
-		transition: transform 180ms ease;
-	}
-
-	.series-group[open] .series-chevron {
-		transform: rotate(180deg);
-	}
-
-	.series-links {
-		display: grid;
-		margin: 2px 5px 7px 13px;
-		padding-left: 7px;
-		border-left: 1px solid rgba(var(--accent), 0.24);
-	}
-
-	.article-links .series-links a {
-		display: grid;
-		grid-template-columns: 22px minmax(0, 1fr);
-		align-items: start;
-		padding: 0.45rem 0.48rem;
-		gap: 4px;
-	}
-
-	.article-links .series-links a::before {
-		left: -11px;
-	}
-
-	.series-links b {
-		padding-top: 0.08rem;
-		color: var(--accent-strong);
-		font-size: 0.62rem;
-		letter-spacing: 0.04em;
-	}
-
-	.article-links .series-links .series-overview {
-		display: block;
-		color: var(--accent-strong);
-		font-weight: 800;
-	}
-
-	.article-links .series-links .series-overview::before {
-		border-color: var(--pink);
 	}
 
 	@media (max-width: 920px) {

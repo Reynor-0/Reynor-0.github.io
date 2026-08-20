@@ -1,44 +1,44 @@
 [
-	{
-		"id": "vehicle-ethernet",
-		"title": "车载以太网",
-		"description": "从二层帧、管理接口和 T1 PHY，逐步走到交换、DMA 与整车时间同步。",
-		"category": "protocols",
-		"order": 10
-	},
-	{
-		"id": "camera-development",
-		"title": "Camera 应用开发",
-		"description": "在 RK3568 上把 V4L2、DMA-BUF、RGA 与 DRM/KMS 串成可长期运行的 Camera 应用。",
-		"category": "projects",
-		"order": 20
-	},
-	{
-		"id": "linux-camera",
-		"title": "Linux Camera 驱动与链路",
-		"description": "理解 Sensor、MIPI CSI-2、V4L2 Buffer、驱动注册与端到端采集链路。",
-		"category": "drivers",
-		"order": 30
-	},
-	{
-		"id": "uds-diagnostics",
-		"title": "UDS 诊断与刷写",
-		"description": "先建立 UDS 服务模型，再追踪一条 DoIP 刷写请求如何穿过协议栈并写入 Flash。",
-		"category": "protocols",
-		"order": 40
-	},
-	{
-		"id": "demosaic",
-		"title": "Demosaic：从原理到实践",
-		"description": "从 Bayer RAW 的基本问题出发，理解 AHD 边缘感知插值并进入算法实验。",
-		"category": "methods",
-		"order": 50
-	},
-	{
-		"id": "essay",
-		"title": "随笔",
-		"description": "随手记录技术学习中的知识点、联想与阶段性理解。",
-		"category": "methods",
-		"order": 60
-	}
+  {
+    "id": "vehicle-ethernet",
+    "title": "车载以太网",
+    "description": "从二层帧、管理接口和 T1 PHY，逐步走到交换、DMA 与整车时间同步。",
+    "order": 10
+  },
+  {
+    "id": "camera-development",
+    "title": "Camera 应用开发",
+    "description": "在 RK3568 上把 V4L2、DMA-BUF、RGA 与 DRM/KMS 串成可长期运行的 Camera 应用。",
+    "order": 20
+  },
+  {
+    "id": "linux-camera",
+    "title": "Linux Camera 驱动与链路",
+    "description": "理解 Sensor、MIPI CSI-2、V4L2 Buffer、驱动注册与端到端采集链路。",
+    "order": 30
+  },
+  {
+    "id": "uds-diagnostics",
+    "title": "UDS 诊断与刷写",
+    "description": "先建立 UDS 服务模型，再追踪一条 DoIP 刷写请求如何穿过协议栈并写入 Flash。",
+    "order": 40
+  },
+  {
+    "id": "demosaic",
+    "title": "Demosaic：从原理到实践",
+    "description": "从 Bayer RAW 的基本问题出发，理解 AHD 边缘感知插值并进入算法实验。",
+    "order": 50
+  },
+  {
+    "id": "essay",
+    "title": "随笔",
+    "description": "随手记录技术学习中的知识点、联想与阶段性理解。",
+    "order": 60
+  },
+  {
+    "id": "intern",
+    "title": "实习笔记",
+    "description": "记录实习期间的学习和工作经验。",
+    "order": 1
+  }
 ]

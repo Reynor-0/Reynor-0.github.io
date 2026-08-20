@@ -1,7 +1,7 @@
 ---
-title: '随笔'
+title: '随笔(一)'
 description: '随手记录看到的一些知识点'
-tags: ['C/C++', 'OS', 'Network', 'ARM']
+tags: ['ARM']
 series: { id: 'essay', order: 1 }
 pubDate: 'Jun 14 2026'
 ---
@@ -347,4 +347,161 @@ hardware unstack
       v
 继续原程序
 ```
+
+## Cortex-M与Cortex-A异常向量表对比
+
+先一句话总结，Cortex-M的异常向量表是直接映射到ISR地址的，而Cortex-A的异常向量表是映射到异常处理入口，实际的中断处理还需要通过GIC来获取具体的中断ID，然后再跳转到对应的ISR。这也和刚刚讲的第一小节的内容相呼应.
+
+### Cortex-M异常向量表
+
+这个向量表真的是"地址表",以Cortex-M4为例,假设向量表放在0x0000 0000,那整个向量表大概长这样:
+```
+0x0000 0000     Initial MSP
+0x0000 0004     Reset_Handler Address
+0x0000 0008     NMI_Handler Address
+0x0000 000C     HardFault_Handler Address
+0x0000 0010     MemManage_Handler Address
+0x0000 0014     BusFault_Handler Address
+...
+0x0000 003C     SVC_Handler Address
+0x0000 0040     PendSV_Handler Address
+0x0000 0044     SysTick_Handler Address
+0x0000 0048     IRQ0_Handler Address
+...
+```
+
+也就是说,内存里面就是函数入口的地址，例如0x0000 0000C: 0x0800 1621, 0x0800 1621就是Reset_Handler的入口地址。
+
+**Cortex-M上电**
+
+假设芯片刚刚Reset，CPU会从向量表的第0个地址（即0x0000 0000）读取初始堆栈指针（MSP）的值，然后从第1个地址（即0x0000 0004）读取复位处理函数（Reset_Handler）的入口地址，并跳转执行。类似:
+```c
+MSP = *(uint32_t *)0x00000000; // 读取初始堆栈指针
+PC = *(uint32_t *)0x00000004;  // 读取复位处理函数入口地址
+```
+
+**IRQ**
+
+普通的IRQ也是一样的道理，例如UART0对应IRQ number=5。Cortex-M有16个系统异常位置，因此外部中断通常从16开始编号。假设UART0的IRQ number=5，那么在异常向量表中，它的编号为：
+```
+vector index = 16 + IRQ number
+             = 16 + 5
+             = 21
+```
+那么在32位的Cortex-M4中，异常向量表的第21个entry的地址为：
+```
+vector_entry_address = vector_table_base + 21 * 4
+```
+CPU会去VectorTable[21]读取UART0_IRQHandler的入口地址，然后直接跳转执行。
+
+### Cortex-A(AArch32)异常向量表
+
+这里以经典的ARMv7-A为例，例如Cortex-A7、A9、A15等。ARMv7-A的异常向量表是一个固定的内存区域，通常位于0xFFFF0000或0x00000000，具体取决于系统配置。异常向量表包含了各种异常类型的入口地址，例如：
+```
+Vector Base + 0x00: Reset
+Vector Base + 0x04: Undefined Instruction
+Instruction
+Vector Base + 0x08: SVCall (SVC)
+Vector Base + 0x0C: Prefetch Abort
+Vector Base + 0x10: Data Abort
+Vector Base + 0x14: Reserved
+Vector Base + 0x18: IRQ
+Vector Base + 0x1C: FIQ
+```
+
+**注意区别**
+
+Cortex-M的异常向量表是直接映射到ISR地址的，而Cortex-A的异常向量表是映射到异常处理入口，实际的中断处理还需要通过GIC来获取具体的中断ID，然后再跳转到对应的ISR。这也和刚刚讲的第一小节的内容相呼应.
+
+这里不是handler pointer，而是类似以下的结构：
+```
+vectors:
+    b   reset_handler
+    b   undef_handler
+    b   svc_handler
+    b   prefetch_abort_handler
+    b   data_abort_handler
+    nop
+    b   irq_handler
+    b   fiq_handler
+```
+
+内存里面Base + 0x18存的是一条跳转指令，然后跳到真正的处理函数irq_handler()，irq_handler()里面会去读取GIC的ICC_IAR1_EL1寄存器获取当前中断ID，然后再跳转到对应的ISR。
+
+**Cortex-A的启动**
+
+经典的ARMv7-A启动流程是CPU上电之后，CPU进入Reset exception，接着设置CPU mode / CPSR等，将PC指向异常向量表的Reset入口，然后执行Reset_Handler。Reset_Handler会进行一系列初始化工作，例如设置堆栈指针、初始化内存、设置中断向量表基地址等。之后，CPU会跳转到主程序入口点，开始执行操作系统或应用程序。
+
+注意，A核不会自动初始化SP。在M核中Vector Table的第0个entry就是MSP的初始值，而A核没有这个机制，A核的SP需要在Reset_Handler里面手动初始化。
+```
+ldr sp, =stack_top
+```
+甚至AArch32不同的异常mode还有自己的banked stack pointer，例如FIQ mode有自己的SP，IRQ mode有自己的SP，SVC mode有自己的SP等等，而现代的Cortex-A(AArch64)则又不一样。
+
+### AArch64
+
+AArch64的异常向量表完全重新设计了。在AArch64中:
+```
+VBAR_EL1: Vector Base Address Register EL1
+VBAR_EL2: Vector Base Address Register EL2
+VBAR_EL3: Vector Base Address Register EL3
+```
+分别对应
+```
+EL1
+EL2
+EL3
+```
+的异常向量表。每个表的大小是2048B，也就是2KB。每个表里面有16个vector entry，每个entry是128B，不像AArch32那样只有4B。每个entry对应不同的异常类型和异常级别，例如Synchronous、IRQ、FIQ、SError等。AArch64的异常向量表设计允许更灵活的异常处理和更高的安全性。
+
+因为AArch64要考虑更复杂的异常分类，例如
+```
+异常来自当前的EL还是低EL?
+使用SP0还是SPx?
+低EL是AArch32还是AArch64?
++
+异常类型：
+Synchronous、IRQ、FIQ、SError
+```
+就形成了以下的结构：
+```
+Current EL with SP0
+    Synchronous
+    IRQ
+    FIQ
+    SError
+
+Current EL with SPx
+    Synchronous
+    IRQ
+    FIQ
+    SError
+
+Lower EL using AArch64
+    Synchronous
+    IRQ
+    FIQ
+    SError
+
+Lower EL using AArch32
+    Synchronous
+    IRQ
+    FIQ
+    SError
+```
+
+总共4*4=16个entry，每个entry是128B，总共2048B。每个entry里面可以放置异常处理的代码或者跳转指令，允许更灵活的异常处理和更高的安全性。
+
+**AArch64的entry依然是跳转指令，而不是函数地址**
+
+例如EL1 IRQ entry的内容可能是：
+```
+el1_irq:
+    ...
+    save registers
+    ...
+    bl handle_irq
+    ...
+```
+
 

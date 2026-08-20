@@ -10,7 +10,6 @@ import SeriesArticleNav from '../components/SeriesArticleNav.astro';
 import SeriesSidebar from '../components/SeriesSidebar.astro';
 import { getBlogCategories, getPostCategory, tagSlug } from '../lib/blog';
 import {
-	getSeriesContext,
 	getSeriesDefinition,
 	getSeriesDefinitions,
 	getSeriesPosts,
@@ -46,13 +45,11 @@ const posts = (await getCollection('blog')).sort(
 );
 const categories = await getBlogCategories(posts);
 const seriesDefinitions = await getSeriesDefinitions(posts);
-const seriesContext = getSeriesContext(posts, currentId, seriesDefinitions);
 const readerDefinition = getSeriesDefinition(seriesDefinitions, seriesReaderId);
 const readerPosts = readerDefinition ? getSeriesPosts(posts, readerDefinition.id) : [];
 const isSeriesReader = Boolean(readerDefinition && readerPosts.some((post) => post.id === currentId));
 const currentPost = posts.find((post) => post.id === currentId);
 const currentCategory = currentPost ? getPostCategory(currentPost, categories) : undefined;
-const seriesOrder = currentPost?.data.series?.order;
 const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 ---
 
@@ -110,11 +107,10 @@ const visibleHeadings = headings.filter((heading) => heading.depth <= 3);
 				</div>
 				<a
 					class="post-context"
-					href={isSeriesReader ? '/series/' : seriesContext ? `/series/${seriesContext.definition.id}/` : '/blog'}
+					href={isSeriesReader ? '/series/' : '/blog'}
 				>
 					<span aria-hidden="true">←</span>
-					{seriesContext ? seriesContext.definition.title : currentCategory?.title ?? '文章'}
-					{seriesOrder && <small>· {String(seriesOrder).padStart(2, '0')}</small>}
+					{isSeriesReader ? readerDefinition?.title : currentCategory?.title ?? '文章'}
 				</a>
 				<header class="post-head">
 					<h1>{title}</h1>

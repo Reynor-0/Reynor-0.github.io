@@ -36,10 +36,10 @@ src/content/blog/
 
 ```yaml
 ---
-title: '第一次旅行'
-description: '记录路线与途中见闻。'
-tags: ['旅行']
-pubDate: 'Aug 19 2026'
+title: "第一次旅行"
+description: "记录路线与途中见闻。"
+tags: ["旅行"]
+pubDate: "Aug 19 2026"
 ---
 ```
 
@@ -61,7 +61,6 @@ src/content/series.json
     "id": "camera",
     "title": "Camera 开发",
     "description": "从采集到显示的 Camera 开发记录。",
-    "category": "projects",
     "order": 70
   }
 ]
@@ -72,7 +71,6 @@ src/content/series.json
 - `id`：专栏唯一标识，必填；供文章关联并用于 `/series/<id>/` 路由，不依赖任何目录名称。
 - `title`：专栏名称，必填。
 - `description`：专栏列表和页面摘要，可省略。
-- `category`：该专栏在文章侧栏中归属的博客分类 ID，例如 `projects`、`methods`，必填。
 - `order`：专栏列表排序，数字越小越靠前，可省略，默认 `100`。
 
 然后在任意博客文章的 frontmatter 中加入：
@@ -83,7 +81,9 @@ series:
   order: 1
 ```
 
-其中 `id` 必须与 `series.json` 中某一项的 `id` 一致。以后继续增加 `order: 2`、`order: 3` 的文章，专栏数量、左侧目录、上一篇和下一篇会自动更新。
+其中 `id` 必须与 `series.json` 中某一项的 `id` 一致。以后继续增加 `order: 2`、`order: 3` 的文章，专栏数量、专栏目录、上一篇和下一篇会自动更新。
+
+文章分类与专栏彼此独立：分类只由 Markdown 所在的第一层目录决定，同一专栏的文章可以分散在不同分类。普通文章页面的左栏始终按“分类 → 文章”展示；从专栏页面进入阅读时，左栏才展示该专栏的章节目录。
 
 只在 `series.json` 中增加配置、还没有任何文章时，专栏列表也会显示该专栏；进入后会看到“专栏已经建立”的空状态。
 
@@ -92,7 +92,7 @@ series:
 ## `order` 的完整规则
 
 - `_category.json` 的 `order`：决定博客侧栏中一级分类的顺序，数字越小越靠前。
-- `series.json` 中专栏项的 `order`：决定专栏总览和分类侧栏中各专栏的顺序，数字越小越靠前。
+- `series.json` 中专栏项的 `order`：决定专栏总览中的专栏顺序，数字越小越靠前。
 - 文章 frontmatter 中 `series.order`：决定文章在专栏内部的章节顺序，`1` 是第一篇；同一专栏内不能重复。
 - JSON 中省略 `order` 时默认为 `100`；数值相同时，再按界面标题排序。
 
