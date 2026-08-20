@@ -8,7 +8,7 @@ pubDate: 'Aug 13 2026'
 
 > **注：** 本文为实习期间的项目总结，内容仅供参考。
 
-# 一、项目背景
+## 一、项目背景
 
 Sherlock-ai 是我实习部门的一个内部项目，旨在通过 AI 技术提供对以下场景的分析和诊断能力：
 
@@ -19,9 +19,9 @@ Sherlock-ai 是我实习部门的一个内部项目，旨在通过 AI 技术提�
 
 从嵌入式工程师的角度看，这个项目本质上做的是把过去"资深工程师靠经验 + 半天人工翻 map 文件 + 手算 RAM/ROM 占用 + 写评审报告"的流程，工程化为一个自动化平台。核心难点不在 AI 本身，而在于**如何把嵌入式工具链产物（.map / .map.xml / .lsl 链接脚本）准确解析成结构化数据**——这部分的正确性直接决定了后续 AI 报告的可信度。
 
-# 二、项目具体功能
+## 二、项目具体功能
 
-## 1. 对于集成部门的单版本静态内存分析
+### 1. 对于集成部门的单版本静态内存分析
 
 目前支持 NIO 以下区域的静态内存分析：
 
@@ -31,7 +31,7 @@ Sherlock-ai 是我实习部门的一个内部项目，旨在通过 AI 技术提�
 
 分别对应 e3650 芯片以及 Infineon 的 TC3xx 家族芯片。结合工程最后的 MAP 文件以及相关的链接脚本，输出不同物理区域的占用情况，例如 RAM（TCM、DSPR、PSPR、DLMU、LMURAM、DAM 等）以及 ROM（PFLASH、XCP_Calibration 等）的占用情况，以及不同功能域模块和符号的占用明细。
 
-### 1.1 多核 MCU 的物理内存布局推导——为什么不能直接信 map 文件的 region 名
+#### 1.1 多核 MCU 的物理内存布局推导——为什么不能直接信 map 文件的 region 名
 
 TriCore TC3xx 是多核 MCU（典型 6 核 CPU0-5），每核有自己的 DSPR（Data Scratch-Pad SRAM）、PSPR（Program Scratch-Pad SRAM）、DLMU（Data Local Memory Unit），同时还有全局共享的 LMURAM、DAM、PFLASH。但 HighTec 工具链生成的 `.map` / `.map.xml` 里，region 名是**逻辑视图**，不是物理视图——同一个物理区域可能被映射成多个不同地址的 region（mirror/alias），如果直接按 region 名求和会严重重复统计。
 
@@ -44,7 +44,7 @@ TriCore TC3xx 是多核 MCU（典型 6 核 CPU0-5），每核有自己的 DSPR�
 
 canonical 地址归一是关键——TC3xx 的 non-cached 视图地址在 `0xA0000000-0xC0000000` 段，物理地址在 `0x80000000-0xA0000000` 段，两者相差固定的 `0x20000000`（`CACHED_VIEW_DELTA`）。代码里 `canonical_address()` 把所有 non-cached 地址减去这个 delta，归一到物理地址后再做区间并集，避免 PFLASH 被算两次。
 
-### 1.2 TCM Alias 与 DSPR Local 窗口——多核场景下的漏统计陷阱
+#### 1.2 TCM Alias 与 DSPR Local 窗口——多核场景下的漏统计陷阱
 
 TCM（Tightly Coupled Memory）Alias 问题，我在 e3650（VDF）和 TC3xx（Zone/VDF2）上分别遇到了两个变种：
 
@@ -66,7 +66,7 @@ TC3xx 的 DSPR/PSPR 也有类似机制——每核 DSPR 有全局地址（如 `d
 
 这个"按核投影 vs 按核归属"的区分是关键——少算会让 RAM TOTAL 偏小（误导内存预算决策），多算会让单个核的占用虚高（误导任务分配决策）。
 
-### 1.3 XCP 标定段的 ROM/RAM 真实归属
+#### 1.3 XCP 标定段的 ROM/RAM 真实归属
 
 XCP（Universal Measurement and Calibration Protocol）是车载标定协议，标定段分两类：
 
@@ -85,18 +85,18 @@ XCP（Universal Measurement and Calibration Protocol）是车载标定协议，�
 
 这个"INSIDE 不加、OUTSIDE 才加"的反向逻辑容易写反——直觉是"在 ROM 里就该加"，但实际上 PFLASH 的 `physical_intervals` 已经把整个 PFLASH 区间算进去了，标定段作为 PFLASH 的一部分再加一次就是重复。
 
-### 1.4 产物
+#### 1.4 产物
 
 每个版本生成一份 HTML 主报告 + 一份全量符号 XLSX：
 
 - **HTML 主报告**：总体 RAM/ROM 摘要 + 区域表（每个物理 memory 的 capacity/used/free/holes/usage%）+ XCP 标定段表 + Component Summary（18 个功能域的 RAM/ROM 占用）+ Top N Symbols
 - **全量符号 XLSX**：每个符号的 Section / InputSection / Symbol / Size / ROM_Addr / RAM_Addr / File，典型 12000+ 行，供人工筛查
 
-## 2. 两个版本的对比分析
+### 2. 两个版本的对比分析
 
 对于两个版本，Sherlock-ai 可以进行对比分析，输出不同版本之间的差异情况，例如 RAM/ROM 的占用变化情况，版本迭代的功能点改动以及相应的代码分析。
 
-### 2.1 任务链编排与四级缓存
+#### 2.1 任务链编排与四级缓存
 
 整个对比分析是 Celery 异步任务链：
 
@@ -118,7 +118,7 @@ sync_project（并行 A/B，从 GitLab 同步代码）
 
 缓存用引用计数管理（`_atomic_increment_ref_count`），多任务共享同一份 CodeProject/ZoneBuild 时原子递增，任务结束递减，零引用后由 `scheduler/cleanup.py` 定时清理。重启恢复（`restart_recovery.py`）保证服务重启后引用计数一致。
 
-### 2.2 代码索引驱动的 AI 归因
+#### 2.2 代码索引驱动的 AI 归因
 
 编译完成后，用 `scip-clang` + `scip-cli` 构建 LSIF（Language Server Index Format）代码索引。这个索引是后续 AI 分析的关键——AI 不能只看 git diff 的文本，要能回答"这个改动影响了哪些调用方""这个符号在哪里被引用"这类问题。
 
@@ -133,7 +133,7 @@ sync_project（并行 A/B，从 GitLab 同步代码）
 
 每个 subreport 用 Pydantic schema 校验 AI 输出，确保结构化字段（如 `RamRomTotal`、`ObjectChange`、`CompatibilityRisk`）符合预期，避免 AI 自由发挥导致报告不可解析。`EvidenceLookup` 还会反向校验 AI 引用的证据是否真实存在——防止 AI 编造 git diff 行号或符号名（所谓的"幻觉"问题）。
 
-### 2.3 templated vs legacy 两种报告生成模式
+#### 2.3 templated vs legacy 两种报告生成模式
 
 `REPORT_GENERATION_MODE` 支持两种模式：
 
