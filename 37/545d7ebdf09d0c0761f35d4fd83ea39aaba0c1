@@ -1,0 +1,14 @@
+src/content/blog/projects/intern01.md
+  h_e5e187dd8d54e6 31,37,157-172,176-188
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "37545d7ebdf09d0c0761f35d4fd83ea39aaba0c1",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
