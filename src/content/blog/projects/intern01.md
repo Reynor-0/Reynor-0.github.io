@@ -28,13 +28,13 @@ else
 
 ## 关键技术点一：MDIO Clause 22 间接访问 Clause 45
 
-### 2.1 为什么需要间接访问
+### 为什么需要间接访问
 
 88Q1110 的 TC10 寄存器大多位于 MDIO Clause 45 地址空间（按 device 分组：device 1 = PMA/PMD，device 3 = TC10/诊断，device 4 = Vendor）。但很多车载 MCU 的 MDIO 控制器只支持 Clause 22（5 位 PHY 地址 + 5 位寄存器地址，共 32 个寄存器）。
 
 Marvell PHY 提供了一套标准机制：**用 Clause 22 的 reg 13 和 reg 14 作为窗口，间接访问 Clause 45 空间**。
 
-### 2.2 间接访问封装
+### 间接访问封装
 
 核心思路是四步操作：
 
@@ -154,7 +154,38 @@ std_return_t enter_lpsd(dev) {
 
 合并前的旧逻辑只有两个分支（INH 高就拉 WAKE_IN，否则按 link 状态处理），**没有区分 TPS 态与 Normal 态**——TPS 态下链路训练信息还在，应该发 WUP（Wake-Up Pulse）而非切 master；只有 Normal 态下 link down 才需要切 master 重新发起训练。
 
-重构后的四态状态机：
+#### 旧二分支逻辑的 bug：TPS 态误切 master
+
+合并前的旧逻辑只看两个信号——**INH 引脚电平**和**link 是否 up**——串成两个分支：
+
+```c
+// 伪代码：旧二分支逻辑（有 bug）
+if (INH 高) {
+    拉 WAKE_IN;                    // 分支A：深睡
+} else if (is_support_sleep_wakeup) {
+    if (link 未 up) {
+        linkdown_count++;           // 分支B：误判为 Normal 链路掉了
+        if (linkdown_count >= 3) {
+            切 master; sleep(5ms); 切回 slave;   // ← TPS 态不该走这里
+        }
+    } else {
+        发 WUR;
+    }
+}
+```
+
+问题出在 **TPS 模式的特殊性**。TPS（Trained Power Save）是 TC10 的"轻量睡眠"——PHY 还在供电、MDIO 可用，但主动保留链路训练信息进入低功耗。TPS 态下：
+
+- **INH 是低**（和 Normal 一样，PHY 没深睡）
+- **link 是 down**（链路低功耗不传数据）
+
+旧逻辑看到 INH 低 + link down，**误以为 PHY 在 Normal 态且链路掉了**，于是走"切 master 重新发起链路训练"。但这正是 TPS 态不该做的——
+
+在 TPS 模式下，本端 PHY 已经和链路伙伴协商好保留训练信息，双方都知道"我们暂时休眠但参数还在，发个 WUP 就能秒恢复"。这时本端强行切 master 重新发起训练，相当于**撕毁了和伙伴的休眠协议**：伙伴那边的 PHY 还在 TPS 态等着收 WUP，结果收到本端发起的全新 master 训练请求，状态机被打乱——要么误判成"对端要重新建链"而异常退出 TPS，要么训练参数对不上导致链路长时间建立不起来。结果就是本端切了 master、保持 5ms、切回 slave，但伙伴没配合好，链路一直 down，唤醒失败。
+
+这条"TPS 态误切 master"的错误路径，只有读 reg 0x8703（TC10 Status）的 bit[2:0] 区分 TPS 和 Normal 才能避免。
+
+#### 重构后的四态状态机：
 
 ```c
 // 伪代码：四态唤醒状态机
