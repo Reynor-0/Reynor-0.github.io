@@ -2,6 +2,7 @@
 title: 'Sherlock-ai agent项目总结'
 description: ''
 tags: ['Sherlock-ai', 'AI', '内存分析', 'Infineon', 'e3650']
+series: { id: 'intern', order: 3 }
 pubDate: 'Aug 13 2026'
 ---
 
