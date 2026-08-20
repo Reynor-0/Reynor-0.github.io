@@ -1,0 +1,43 @@
+src/content/blog/language/essay_02.md
+  h_e5e187dd8d54e6 1-260
+src/content.config.ts
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 6-9,12,16-17,19-20,22-43,47-57,61-67
+src/content/series.json
+  h_e5e187dd8d54e6 37-42
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 2-36,43
+src/content/blog/projects/intern02.md
+  h_e5e187dd8d54e6 1-231
+src/content/blog/language/_category.json
+  h_e5e187dd8d54e6 1-5
+src/lib/series.ts
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 6,14-22,24-31,33,35,39-40,42,46-48,50-58,60,63-65,67-70,74-75,77,81-83,85-88,90-94,96-102
+src/content/blog/projects/intern01.md
+  h_e5e187dd8d54e6 2-3,5-6,15-22,25,27-29,31,33,35,37-39,42-45,47-48,50-51,53-56,58,60-63,65,67,69,71-75,77,79,82-109,112,116,118,120,122-140,142,146-149,151,153,155,157,160-167,169-171,174-177,180-183,185-202,204-205,209,213,215-220,223,226,228,230-235,237-243,246,248,250,253-259,261-263,265-271,273-279,281,283-286,289-303,305-306,308-310,312,314,316-329,332-340,344-348,350,353-354,356-366,369,372-386,388,390,392,395-413,415,417-423
+src/components/BlogSidebar.astro
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 15,19-20,41,54,192,201
+src/content/README.md
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 84-86,95
+src/layouts/BlogPost.astro
+  s_02e6d8d3e1d668::t_7f5f0a2a24080e 110,113
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "dc4ed6607d5575945b4fd6ede229e263314f3882",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  },
+  "sessions": {
+    "s_02e6d8d3e1d668": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fefb6-a4c6-75b0-8f18-634cfb8ef437",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
