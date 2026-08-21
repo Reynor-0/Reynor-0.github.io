@@ -1,7 +1,6 @@
 ---
 title: 'V4L2 Camera Pipeline Demo'
 description: '从采集、缓冲、ISP 处理到虚拟摄像头输出的端到端实验。'
-series: { id: 'linux-camera', order: 5 }
 tags: ['V4L2', 'Camera', 'Linux']
 pubDate: 'Jun 24 2026'
 ---

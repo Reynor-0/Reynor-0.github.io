@@ -1,7 +1,6 @@
 ---
 title: '从零编写 IMX415 驱动：从最小出图到完整 Controls 与 Runtime PM'
 description: '参照 Linus 项目中的 IMX415 驱动，从 I2C 读写和最小出图开始，逐步加入 V4L2 Controls 与 Runtime PM。'
-series: { id: 'linux-camera', order: 4 }
 tags: ['IMX415', 'V4L2', 'Linux 驱动']
 pubDate: 'Jul 10 2026'
 updatedDate: 'Jul 13 2026'

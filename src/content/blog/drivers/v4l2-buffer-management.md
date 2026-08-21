@@ -1,7 +1,6 @@
 ---
 title: 'V4L2 Buffer Management'
 description: 'Linux Media API 中 buffer 队列、ownership 和阻塞语义的阅读摘记。'
-series: { id: 'linux-camera', order: 2 }
 tags: ['V4L2', 'Buffer', 'Linux 驱动']
 pubDate: 'Jun 18 2026'
 ---

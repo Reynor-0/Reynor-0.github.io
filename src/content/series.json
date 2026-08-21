@@ -12,8 +12,8 @@
     "order": 20
   },
   {
-    "id": "linux-camera",
-    "title": "Linux Camera 驱动与链路",
+    "id": "camera-driver",
+    "title": "Camera 驱动开发",
     "description": "理解 Sensor、MIPI CSI-2、V4L2 Buffer、驱动注册与端到端采集链路。",
     "order": 30
   },
