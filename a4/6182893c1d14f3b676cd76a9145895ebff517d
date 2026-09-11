@@ -1,0 +1,18 @@
+src/content/blog/language/essay_03.md
+  h_e5e187dd8d54e6 1-400
+src/content/blog/language/essay_04.md
+  h_e5e187dd8d54e6 1-398
+src/content/blog/projects/intern04.md
+  h_e5e187dd8d54e6 1-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "a46182893c1d14f3b676cd76a9145895ebff517d",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
