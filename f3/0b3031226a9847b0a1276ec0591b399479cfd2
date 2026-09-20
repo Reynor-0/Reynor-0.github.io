@@ -1,0 +1,24 @@
+src/content/blog/language/essay_08.md
+  h_e5e187dd8d54e6 1-1104
+src/content/blog/language/essay_04.md
+  h_e5e187dd8d54e6 9,38,55,90,145,172,177,205,211,252,279,299,312,380
+src/content/blog/language/essay_10.md
+  h_e5e187dd8d54e6 1-7
+src/content/blog/language/essay_09.md
+  h_e5e187dd8d54e6 1-1060
+src/content/blog/language/essay_07.md
+  h_e5e187dd8d54e6 1-1234
+src/content/blog/language/essay_05.md
+  h_e5e187dd8d54e6 1-1670
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "f30b3031226a9847b0a1276ec0591b399479cfd2",
+  "prompts": {},
+  "humans": {
+    "h_e5e187dd8d54e6": {
+      "author": "Reynor-0 <107984354+Reynor-0@users.noreply.github.com>"
+    }
+  }
+}
